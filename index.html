@@ -1,0 +1,3153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="تطبيق المحامين">
+    <meta name="application-name" content="تطبيق المحامين">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileImage" content="./icons/icon-144x144.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="72x72" href="./icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="./icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="./icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png">
+    
+    <!-- Standard Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-72x72.png">
+    
+    <title>تطبيق المحامين</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="shared-config.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #e0e7ff;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --gray-light: #f1f5f9;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --light: #0f172a;
+            --white: #1e293b;
+            --gray-light: #334155;
+            --dark: #f1f5f9;
+            --border: #475569;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--light);
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode .app-header {
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-left: 0.5rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .sidebar {
+            background: rgba(30, 41, 59, 0.98);
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary-light), rgba(139, 92, 246, 0.1));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-close {
+            background: var(--white);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: right;
+            color: var(--dark);
+        }
+
+        .sidebar-menu-item:hover {
+            background: var(--primary-light);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 1.2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.9rem 1.1rem 0.9rem 3.2rem;
+            border: 2px solid var(--border);
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .search-input {
+            background: var(--white);
+        }
+
+        .cases-grid {
+            display: grid;
+            gap: 1.2rem;
+            grid-template-columns: 1fr;
+            margin-top: 1.2rem;
+        }
+
+        @media (min-width: 768px) {
+            .cases-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .cases-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .case-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.2rem;
+            padding: 1.4rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        body.dark-mode .case-card {
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .case-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 50px rgba(99, 102, 241, 0.15);
+        }
+
+        .case-number {
+            background: linear-gradient(135deg, var(--primary-light), rgba(139, 92, 246, 0.1));
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .case-status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-مسودة { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #374151; }
+        .status-مرفوع { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
+        .status-تحت-المراجعة { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+        .status-في-المحكمة { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #6b21a8; }
+        .status-صدور-حكم { background: linear-gradient(135deg, #fed7aa, #fdba74); color: #9a3412; }
+        .status-تبليغ-بالحكم { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; }
+        .status-تنفيذ { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+        .status-مغلق { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #374151; }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            max-width: 480px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .modal {
+            background: rgba(30, 41, 59, 0.98);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            font-size: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+            z-index: 50;
+        }
+
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        /* نظام الإشعارات */
+        .notification-bell {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .notification-bell:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .notification-bell i {
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover i {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* نافذة الإشعارات */
+        .notifications-panel {
+            position: fixed;
+            top: 80px;
+            left: 1rem;
+            right: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            max-height: 70vh;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .notifications-panel.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        body.dark-mode .notifications-panel {
+            background: rgba(30, 41, 59, 0.98);
+        }
+
+        .notifications-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notifications-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .notification-action-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .notification-action-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .notifications-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            transform: translateX(0);
+            background: var(--white);
+            overflow: hidden;
+        }
+
+        .notification-item:hover {
+            background: var(--gray-light);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item.unread {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* أنيميشن الحذف بالتمرير */
+        .notification-item.swiping {
+            transition: transform 0.1s ease;
+        }
+
+        .notification-item.swiped-left {
+            transform: translateX(-100%);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification-item.swiped-right {
+            transform: translateX(100%);
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification-item.deleting {
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                max-height: 100px;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-20px);
+                padding: 0;
+                margin: 0;
+            }
+        }
+
+        /* أيقونات العمل عند التمرير */
+        .swipe-action {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1.5rem;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .swipe-action.left {
+            right: 1rem;
+        }
+
+        .swipe-action.right {
+            left: 1rem;
+        }
+
+        .notification-item.swiped-left .swipe-action.left,
+        .notification-item.swiped-right .swipe-action.right {
+            opacity: 1;
+        }
+
+        .notification-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-icon.new-case {
+            background: linear-gradient(135deg, var(--primary-light), rgba(99, 102, 241, 0.2));
+            color: var(--primary);
+        }
+
+        .notification-icon.status-update {
+            background: linear-gradient(135deg, var(--warning), rgba(245, 158, 11, 0.2));
+            color: #92400e;
+        }
+
+        .notification-icon.deadline {
+            background: linear-gradient(135deg, var(--danger), rgba(239, 68, 68, 0.2));
+            color: #dc2626;
+        }
+
+        .notification-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-description {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--gray);
+        }
+
+        .no-notifications i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Chat Styles */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            max-height: 300px;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            max-width: 80%;
+        }
+
+        .chat-message.sent {
+            margin-right: auto;
+            flex-direction: row-reverse;
+        }
+
+        .chat-message.received {
+            margin-left: auto;
+        }
+
+        .chat-message-content {
+            background: var(--white);
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .chat-message.sent .chat-message-content {
+            background: var(--primary);
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .chat-message.received .chat-message-content {
+            background: var(--gray-light);
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .chat-message-text {
+            margin-bottom: 0.25rem;
+            word-wrap: break-word;
+        }
+
+        .chat-message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .chat-input-container input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .chat-input-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chat-input-container button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-container button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .chat-input-container button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Login Screen -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <i class="fas fa-balance-scale" style="font-size: 4rem; color: var(--primary);"></i>
+                    <h1 style="margin: 1rem 0 0.5rem;">تطبيق المحامين</h1>
+                    <p style="color: var(--gray);">تطبيق الإدارة القانونية</p>
+                </div>
+                
+                <form id="login-form">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 700;">رقم الترخيص</label>
+                        <input type="text" id="license-number" class="form-control" placeholder="أدخل رقم الترخيص" required>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 700;">رقم الهاتف</label>
+                        <input type="tel" id="phone-number" class="form-control" placeholder="أدخل رقم الهاتف" required>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        تسجيل الدخول
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="hidden">
+            <!-- Sidebar -->
+            <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3 style="font-weight: 800;">القائمة</h3>
+                    <button class="sidebar-close" onclick="closeSidebar()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div style="padding: 1rem;">
+                    <button class="sidebar-menu-item" onclick="refreshData(); closeSidebar();">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>تحديث البيانات</span>
+                    </button>
+                    <button class="sidebar-menu-item" onclick="showDiagnosticInfo(); closeSidebar();">
+                        <i class="fas fa-search"></i>
+                        <span>تشخيص البيانات</span>
+                    </button>
+                    <button class="sidebar-menu-item" onclick="showAllCasesForDebug(); closeSidebar();">
+                        <i class="fas fa-eye"></i>
+                        <span>عرض جميع الدعاوى (تشخيص)</span>
+                    </button>
+                    <button class="sidebar-menu-item" onclick="checkSmartNotifications(); closeSidebar();">
+                        <i class="fas fa-brain"></i>
+                        <span>فحص الإشعارات الذكية</span>
+                    </button>
+                    <button class="sidebar-menu-item" onclick="showAddDeductionModal(); closeSidebar();">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>إضافة استقطاع</span>
+                    </button>
+                    <button class="sidebar-menu-item" onclick="logout(); closeSidebar();">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </div>
+
+                <div style="padding: 1rem; border-top: 1px solid var(--border);">
+                    <div class="setting-item">
+                        <span><i class="fas fa-moon"></i> الوضع الليلي</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span><i class="fas fa-bell"></i> الإشعارات</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifications-toggle" checked onchange="toggleNotificationSettings()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span><i class="fas fa-desktop"></i> إشعارات المتصفح</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="browser-notifications-toggle" onchange="toggleBrowserNotifications()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <span><i class="fas fa-brain"></i> إشعارات ذكية</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="smart-notifications-toggle" checked onchange="toggleSmartNotifications()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button class="sidebar-menu-item" onclick="clearAllNotifications(); closeSidebar();" style="margin-top: 1rem; color: #ef4444;">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>حذف جميع الإشعارات</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="app-header">
+                <div class="header-content">
+                    <div class="app-title">
+                        <i class="fas fa-balance-scale"></i>
+                        تطبيق المحامين
+                    </div>
+                    <div style="display: flex;">
+                        <button class="notification-bell" onclick="toggleChat()" id="chat-bell">
+                            <i class="fas fa-comments"></i>
+                            <span class="notification-badge hidden" id="chat-badge">0</span>
+                        </button>
+                        <button class="notification-bell" onclick="toggleNotifications()" id="notification-bell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge hidden" id="notification-badge">0</span>
+                        </button>
+                        <button class="header-btn" onclick="toggleSidebar()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة الإشعارات -->
+            <div class="notifications-panel" id="notifications-panel">
+                <div class="notifications-header">
+                    <h3 class="notifications-title">الإشعارات</h3>
+                    <div class="notifications-actions">
+                        <button class="notification-action-btn" onclick="markAllAsRead()" title="تعيين الكل كمقروء">
+                            <i class="fas fa-check-double"></i>
+                        </button>
+                        <button class="notification-action-btn" onclick="toggleNotifications()" title="إغلاق">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="notifications-content" id="notifications-content">
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>لا توجد إشعارات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة الدردشة -->
+            <div class="notifications-panel" id="chat-panel">
+                <div class="notifications-header">
+                    <h3>
+                        <i class="fas fa-comments"></i>
+                        الدردشة مع نظام الإدارة
+                    </h3>
+                    <button onclick="toggleChat()" style="background: none; border: none; color: var(--gray); font-size: 1.2rem; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="no-notifications">
+                        <i class="fas fa-comment-dots"></i>
+                        <p>لا توجد رسائل</p>
+                        <p style="font-size: 0.8rem; color: var(--gray);">ابدأ المحادثة أدناه</p>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendChatMessage()" id="send-chat-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: var(--gray-light); padding: 0.6rem 1rem; font-size: 0.875rem;">
+                <span id="connection-status">غير متصل</span>
+                <span id="lawyer-info" style="float: left; background: var(--primary-light); padding: 0.4rem 0.9rem; border-radius: 20px;"></span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div style="position: relative; margin-bottom: 1.2rem;">
+                    <input type="text" class="search-input" id="search-input" placeholder="البحث في الدعاوى..." onkeyup="searchCases()">
+                    <i class="fas fa-search" style="position: absolute; right: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                </div>
+
+                <div id="loading" class="hidden" style="text-align: center; padding: 3rem;">
+                    <div style="width: 2.5rem; height: 2.5rem; border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto;"></div>
+                </div>
+
+                <div id="cases-container" class="cases-grid"></div>
+
+                <div id="empty-state" class="hidden" style="text-align: center; padding: 3rem; color: var(--gray);">
+                    <i class="fas fa-folder-open" style="font-size: 4rem; margin-bottom: 1.2rem;"></i>
+                    <h3>لا توجد دعاوى</h3>
+                    <p style="margin-bottom: 1.5rem;">لم يتم العثور على دعاوى مخصصة لك</p>
+                    <button class="btn" onclick="refreshData()" style="max-width: 200px;">
+                        <i class="fas fa-refresh"></i> إعادة التحميل
+                    </button>
+                </div>
+            </div>
+
+            <button class="fab" onclick="showAddDeductionModal()">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="case-details-modal" class="modal-overlay">
+        <div class="modal">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+                <h3 id="case-details-title">تفاصيل الدعوى</h3>
+                <button onclick="closeModal('case-details-modal')" style="float: left; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div id="case-details-body" style="padding: 1.5rem;"></div>
+        </div>
+    </div>
+
+    <div id="update-status-modal" class="modal-overlay">
+        <div class="modal">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+                <h3>تحديث حالة الدعوى</h3>
+                <button onclick="closeModal('update-status-modal')" style="float: left; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">الحالة الجديدة</label>
+                    <select id="new-status" class="form-control">
+                        <option value="مسودة">مسودة</option>
+                        <option value="مرفوع">مرفوع</option>
+                        <option value="تحت المراجعة">تحت المراجعة</option>
+                        <option value="في المحكمة">في المحكمة</option>
+                        <option value="صدور حكم">صدور حكم</option>
+                        <option value="تبليغ بالحكم">تبليغ بالحكم</option>
+                        <option value="تنفيذ">تنفيذ</option>
+                        <option value="مغلق">مغلق</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">المرحلة</label>
+                    <select id="new-stage" class="form-control">
+                        <option value="إعداد الدعوى">إعداد الدعوى</option>
+                        <option value="تقييم الدعوى">تقييم الدعوى</option>
+                        <option value="التبليغ">التبليغ</option>
+                        <option value="المرافعة">المرافعة</option>
+                        <option value="تحت الدراسة">تحت الدراسة</option>
+                        <option value="صدور حكم">صدور حكم</option>
+                        <option value="الاستئناف">الاستئناف</option>
+                        <option value="التنفيذ">التنفيذ</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">ملاحظات</label>
+                    <textarea id="status-notes" class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn" onclick="updateCaseStatus()">تحديث</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-deduction-modal" class="modal-overlay">
+        <div class="modal">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+                <h3>إضافة استقطاع جديد</h3>
+                <button onclick="closeModal('add-deduction-modal')" style="float: left; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">اختر الدعوى</label>
+                    <select id="deduction-case" class="form-control">
+                        <option value="">اختر الدعوى...</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">المبلغ المستقطع (د.ع)</label>
+                    <input type="number" id="deduction-amount" class="form-control" min="0">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">تاريخ الاستقطاع</label>
+                    <input type="date" id="deduction-date" class="form-control">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">المصدر</label>
+                    <select id="deduction-source" class="form-control">
+                        <option value="محكمة البداءة">محكمة البداءة</option>
+                        <option value="دائرة التنفيذ">دائرة التنفيذ</option>
+                        <option value="محكمة الاستئناف">محكمة الاستئناف</option>
+                        <option value="محكمة التمييز">محكمة التمييز</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.6rem;">ملاحظات</label>
+                    <textarea id="deduction-notes" class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn" onclick="addDeduction()">إضافة الاستقطاع</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrZmZwSOVhonbLWGrHnctkV4tUcT7UNZM",
+            authDomain: "legal-department-dbd28.firebaseapp.com",
+            databaseURL: "https://legal-department-dbd28-default-rtdb.firebaseio.com",
+            projectId: "legal-department-dbd28",
+            storageBucket: "legal-department-dbd28.firebasestorage.app",
+            messagingSenderId: "452600951683",
+            appId: "1:452600951683:web:2929d22d53a309d947fcb6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentLawyer = null;
+        let allCases = [];
+        let filteredCases = [];
+        let selectedCaseId = null;
+        let isConnected = false;
+        let notifications = [];
+        let unreadCount = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            setupConnectionMonitoring();
+            setupFormHandlers();
+            loadSettings();
+            setupNotifications();
+        });
+
+        // نظام إدارة الإشعارات
+        function setupNotifications() {
+            // تحميل الإشعارات المحفوظة
+            loadStoredNotifications();
+            
+            // إعداد مراقبة الإشعارات الجديدة من Firebase
+            setupNotificationListeners();
+            
+            // إعداد إشعارات المتصفح
+            requestNotificationPermission();
+        }
+
+        function loadStoredNotifications() {
+            const stored = localStorage.getItem('lawyer_notifications');
+            if (stored) {
+                notifications = JSON.parse(stored);
+                updateNotificationBadge();
+                renderNotifications();
+            }
+        }
+
+        function saveNotifications() {
+            localStorage.setItem('lawyer_notifications', JSON.stringify(notifications));
+        }
+
+        function setupNotificationListeners() {
+            if (!database) return;
+
+            // مراقبة الإشعارات المخصصة للمحامي
+            database.ref('notifications').on('child_added', (snapshot) => {
+                const notification = snapshot.val();
+                if (notification && notification.targetLawyer === currentLawyer?.name) {
+                    addNotification(notification);
+                }
+            });
+
+            // مراقبة الدعاوى الجديدة
+            database.ref('data/cases').on('child_added', (snapshot) => {
+                const caseData = snapshot.val();
+                if (caseData && caseData.lawyerName === currentLawyer?.name) {
+                    const notification = {
+                        id: Date.now().toString(),
+                        type: 'new-case',
+                        title: 'دعوى جديدة',
+                        description: `تم تخصيص دعوى جديدة رقم ${caseData.caseNumber} لك`,
+                        caseId: caseData.id || snapshot.key,
+                        caseNumber: caseData.caseNumber,
+                        timestamp: new Date().toISOString(),
+                        read: false
+                    };
+                    addNotification(notification);
+                }
+            });
+
+            // مراقبة تحديثات الدعاوى
+            database.ref('data/cases').on('child_changed', (snapshot) => {
+                const caseData = snapshot.val();
+                if (caseData && caseData.lawyerName === currentLawyer?.name && 
+                    caseData.updatedFrom === 'main_app') {
+                    const notification = {
+                        id: Date.now().toString(),
+                        type: 'status-update',
+                        title: 'تحديث على دعوى',
+                        description: `تم تحديث الدعوى رقم ${caseData.caseNumber} - الحالة: ${caseData.status}`,
+                        caseId: caseData.id || snapshot.key,
+                        caseNumber: caseData.caseNumber,
+                        timestamp: new Date().toISOString(),
+                        read: false
+                    };
+                    addNotification(notification);
+                }
+            });
+        }
+
+        function addNotification(notification) {
+            // التحقق من تفعيل الإشعارات
+            const notificationsEnabled = localStorage.getItem('notificationsEnabled') !== 'false';
+            if (!notificationsEnabled) return;
+            
+            // تجنب الإشعارات المكررة
+            const exists = notifications.find(n => n.id === notification.id);
+            if (exists) return;
+
+            notifications.unshift(notification);
+            
+            // الاحتفاظ بآخر 50 إشعار فقط
+            if (notifications.length > 50) {
+                notifications = notifications.slice(0, 50);
+            }
+
+            updateNotificationBadge();
+            renderNotifications();
+            saveNotifications();
+
+            // إظهار إشعار المتصفح
+            showBrowserNotification(notification);
+        }
+
+        function updateNotificationBadge() {
+            unreadCount = notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('notification-badge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            panel.classList.toggle('show');
+            
+            if (panel.classList.contains('show')) {
+                renderNotifications();
+            }
+        }
+
+        function renderNotifications() {
+            const content = document.getElementById('notifications-content');
+            
+            if (notifications.length === 0) {
+                content.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>لا توجد إشعارات</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = notifications.map(notification => `
+                <div class="notification-item ${notification.read ? '' : 'unread'}" 
+                     data-notification-id="${notification.id}"
+                     ontouchstart="handleTouchStart(event, '${notification.id}')"
+                     ontouchmove="handleTouchMove(event, '${notification.id}')"
+                     ontouchend="handleTouchEnd(event, '${notification.id}')"
+                     onclick="handleNotificationClick('${notification.id}')">
+                    
+                    <!-- أيقونات العمل عند التمرير -->
+                    <div class="swipe-action left">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <div class="swipe-action right">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    
+                    <div class="notification-icon ${notification.type}">
+                        <i class="fas ${getNotificationIcon(notification.type)}"></i>
+                    </div>
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-description">${notification.description}</div>
+                    <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+                </div>
+            `).join('');
+        }
+
+        function getNotificationIcon(type) {
+            switch(type) {
+                case 'new-case': return 'fa-gavel';
+                case 'status-update': return 'fa-edit';
+                case 'deadline': return 'fa-exclamation-triangle';
+                default: return 'fa-info-circle';
+            }
+        }
+
+        function formatNotificationTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'الآن';
+            if (minutes < 60) return `منذ ${minutes} دقيقة`;
+            if (hours < 24) return `منذ ${hours} ساعة`;
+            if (days < 7) return `منذ ${days} يوم`;
+            
+            return date.toLocaleDateString('ar-EG');
+        }
+
+        function handleNotificationClick(notificationId) {
+            // تجاهل النقر إذا كان هناك تمرير
+            if (isSwipeHandled) {
+                isSwipeHandled = false;
+                return;
+            }
+            
+            const notification = notifications.find(n => n.id === notificationId);
+            if (!notification) return;
+
+            // تعيين الإشعار كمقروء
+            notification.read = true;
+            updateNotificationBadge();
+            renderNotifications();
+            saveNotifications();
+
+            // إغلاق نافذة الإشعارات
+            document.getElementById('notifications-panel').classList.remove('show');
+
+            // التوجه إلى الدعوى المرتبطة
+            if (notification.caseId || notification.caseNumber) {
+                navigateToCase(notification.caseId, notification.caseNumber);
+            }
+        }
+
+        function navigateToCase(caseId, caseNumber) {
+            // البحث عن الدعوى في القائمة الحالية
+            let targetCase = allCases.find(c => 
+                c.id === caseId || 
+                c.firebaseId === caseId || 
+                c.caseNumber === caseNumber
+            );
+
+            if (targetCase) {
+                // إظهار تفاصيل الدعوى
+                showCaseDetails(caseId || caseNumber);
+            } else {
+                // إعادة تحميل الدعاوى والبحث
+                loadLawyerCases().then(() => {
+                    targetCase = allCases.find(c => 
+                        c.id === caseId || 
+                        c.firebaseId === caseId || 
+                        c.caseNumber === caseNumber
+                    );
+                    
+                    if (targetCase) {
+                        showCaseDetails(caseId || caseNumber);
+                    } else {
+                        alert(`لم يتم العثور على الدعوى رقم ${caseNumber}`);
+                    }
+                });
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationBadge();
+            renderNotifications();
+            saveNotifications();
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function showBrowserNotification(notification) {
+            const browserNotificationsEnabled = localStorage.getItem('browserNotificationsEnabled') === 'true';
+            
+            if (browserNotificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+                const browserNotification = new Notification(notification.title, {
+                    body: notification.description,
+                    icon: '/assets/icon.png',
+                    badge: '/assets/icon.png',
+                    tag: notification.id
+                });
+
+                browserNotification.onclick = () => {
+                    window.focus();
+                    handleNotificationClick(notification.id);
+                    browserNotification.close();
+                };
+
+                setTimeout(() => {
+                    browserNotification.close();
+                }, 5000);
+            }
+        }
+
+        // متغيرات التمرير
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let currentSwipeTarget = null;
+        let isSwipeHandled = false;
+
+        // معالجة بداية اللمس
+        function handleTouchStart(event, notificationId) {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            currentSwipeTarget = event.currentTarget;
+            isSwipeHandled = false;
+            
+            // إضافة كلاس التمرير
+            currentSwipeTarget.classList.add('swiping');
+        }
+
+        // معالجة حركة اللمس
+        function handleTouchMove(event, notificationId) {
+            if (!currentSwipeTarget) return;
+            
+            event.preventDefault();
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+            
+            // التحقق من أن الحركة أفقية وليس عمودية
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                return;
+            }
+            
+            // تطبيق التحويل
+            const maxSwipe = 150;
+            const clampedDelta = Math.max(-maxSwipe, Math.min(maxSwipe, deltaX));
+            currentSwipeTarget.style.transform = `translateX(${clampedDelta}px)`;
+            
+            // تغيير اللون حسب الاتجاه
+            if (Math.abs(clampedDelta) > 50) {
+                if (deltaX < 0) {
+                    currentSwipeTarget.classList.add('swiped-left');
+                    currentSwipeTarget.classList.remove('swiped-right');
+                } else {
+                    currentSwipeTarget.classList.add('swiped-right');
+                    currentSwipeTarget.classList.remove('swiped-left');
+                }
+            } else {
+                currentSwipeTarget.classList.remove('swiped-left', 'swiped-right');
+            }
+        }
+
+        // معالجة انتهاء اللمس
+        function handleTouchEnd(event, notificationId) {
+            if (!currentSwipeTarget) return;
+            
+            const currentTransform = currentSwipeTarget.style.transform;
+            const translateX = currentTransform ? parseFloat(currentTransform.replace(/translateX\((.*)px\)/, '$1')) : 0;
+            
+            // إزالة كلاس التمرير
+            currentSwipeTarget.classList.remove('swiping');
+            
+            // التحقق من العتبة للعمل
+            if (Math.abs(translateX) > 100) {
+                isSwipeHandled = true;
+                
+                if (translateX < 0) {
+                    // التمرير لليسار = حذف
+                    deleteNotification(notificationId);
+                } else {
+                    // التمرير لليمين = تعيين كمقروء
+                    markNotificationAsRead(notificationId);
+                }
+            } else {
+                // إعادة تعيين الموضع
+                currentSwipeTarget.style.transform = 'translateX(0)';
+                currentSwipeTarget.classList.remove('swiped-left', 'swiped-right');
+            }
+            
+            currentSwipeTarget = null;
+        }
+
+        // حذف إشعار
+        function deleteNotification(notificationId) {
+            const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            if (notificationElement) {
+                notificationElement.classList.add('deleting');
+                
+                // إزالة من المصفوفة
+                notifications = notifications.filter(n => n.id !== notificationId);
+                
+                setTimeout(() => {
+                    updateNotificationBadge();
+                    renderNotifications();
+                    saveNotifications();
+                }, 300);
+            }
+        }
+
+        // تعيين إشعار كمقروء
+        function markNotificationAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification) {
+                notification.read = true;
+                
+                const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                if (notificationElement) {
+                    notificationElement.style.transform = 'translateX(0)';
+                    notificationElement.classList.remove('swiped-left', 'swiped-right');
+                    
+                    setTimeout(() => {
+                        updateNotificationBadge();
+                        renderNotifications();
+                        saveNotifications();
+                    }, 300);
+                }
+            }
+        }
+
+        // إشعارات ذكية للمواعيد والمهام
+        function checkSmartNotifications() {
+            const smartNotificationsEnabled = localStorage.getItem('smartNotificationsEnabled') !== 'false';
+            if (!smartNotificationsEnabled || !allCases || allCases.length === 0) return;
+
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            allCases.forEach(caseItem => {
+                if (caseItem.nextHearing) {
+                    const hearingDate = new Date(caseItem.nextHearing);
+                    const timeDiff = hearingDate - today;
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+                    // إشعار للجلسات خلال يوم واحد
+                    if (daysDiff === 1) {
+                        const notification = {
+                            id: `hearing_tomorrow_${caseItem.caseNumber}`,
+                            type: 'deadline',
+                            title: 'جلسة غداً',
+                            description: `لديك جلسة غداً للدعوى رقم ${caseItem.caseNumber}`,
+                            caseId: caseItem.id || caseItem.firebaseId,
+                            caseNumber: caseItem.caseNumber,
+                            timestamp: new Date().toISOString(),
+                            read: false
+                        };
+                        addNotification(notification);
+                    }
+                    
+                    // إشعار للجلسات خلال أسبوع
+                    else if (daysDiff > 1 && daysDiff <= 7) {
+                        const notification = {
+                            id: `hearing_week_${caseItem.caseNumber}`,
+                            type: 'deadline',
+                            title: 'جلسة قريبة',
+                            description: `لديك جلسة خلال ${daysDiff} أيام للدعوى رقم ${caseItem.caseNumber}`,
+                            caseId: caseItem.id || caseItem.firebaseId,
+                            caseNumber: caseItem.caseNumber,
+                            timestamp: new Date().toISOString(),
+                            read: false
+                        };
+                        addNotification(notification);
+                    }
+                }
+
+                // إشعارات للدعاوى المعلقة لفترة طويلة
+                if (caseItem.lastModified) {
+                    const lastModified = new Date(caseItem.lastModified);
+                    const daysSinceUpdate = Math.ceil((today - lastModified) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysSinceUpdate > 30 && caseItem.status !== 'مغلق') {
+                        const notification = {
+                            id: `stale_case_${caseItem.caseNumber}`,
+                            type: 'status-update',
+                            title: 'دعوى تحتاج متابعة',
+                            description: `الدعوى رقم ${caseItem.caseNumber} لم يتم تحديثها منذ ${daysSinceUpdate} يوم`,
+                            caseId: caseItem.id || caseItem.firebaseId,
+                            caseNumber: caseItem.caseNumber,
+                            timestamp: new Date().toISOString(),
+                            read: false
+                        };
+                        addNotification(notification);
+                    }
+                }
+            });
+        }
+
+        function setupFormHandlers() {
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+            document.getElementById('deduction-date').value = new Date().toISOString().split('T')[0];
+        }
+
+        function loadSettings() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            document.getElementById('dark-mode-toggle').checked = darkMode;
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // تحميل إعدادات الإشعارات
+            const notificationsEnabled = localStorage.getItem('notificationsEnabled') !== 'false';
+            const browserNotificationsEnabled = localStorage.getItem('browserNotificationsEnabled') === 'true';
+            const smartNotificationsEnabled = localStorage.getItem('smartNotificationsEnabled') !== 'false';
+            
+            document.getElementById('notifications-toggle').checked = notificationsEnabled;
+            document.getElementById('browser-notifications-toggle').checked = browserNotificationsEnabled;
+            document.getElementById('smart-notifications-toggle').checked = smartNotificationsEnabled;
+        }
+
+        function toggleNotificationSettings() {
+            const enabled = document.getElementById('notifications-toggle').checked;
+            localStorage.setItem('notificationsEnabled', enabled);
+            
+            if (!enabled) {
+                // إخفاء زر الإشعارات
+                document.getElementById('notification-bell').style.display = 'none';
+                document.getElementById('notifications-panel').classList.remove('show');
+            } else {
+                // إظهار زر الإشعارات
+                document.getElementById('notification-bell').style.display = 'flex';
+            }
+            
+            alert(enabled ? 'تم تفعيل الإشعارات' : 'تم إيقاف الإشعارات');
+        }
+
+        function toggleBrowserNotifications() {
+            const enabled = document.getElementById('browser-notifications-toggle').checked;
+            localStorage.setItem('browserNotificationsEnabled', enabled);
+            
+            if (enabled && 'Notification' in window) {
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission !== 'granted') {
+                            document.getElementById('browser-notifications-toggle').checked = false;
+                            localStorage.setItem('browserNotificationsEnabled', false);
+                            alert('تم رفض إذن الإشعارات');
+                        } else {
+                            alert('تم تفعيل إشعارات المتصفح');
+                        }
+                    });
+                } else if (Notification.permission === 'granted') {
+                    alert('تم تفعيل إشعارات المتصفح');
+                } else {
+                    document.getElementById('browser-notifications-toggle').checked = false;
+                    localStorage.setItem('browserNotificationsEnabled', false);
+                    alert('إشعارات المتصفح محظورة');
+                }
+            } else {
+                alert('تم إيقاف إشعارات المتصفح');
+            }
+        }
+
+        function toggleSmartNotifications() {
+            const enabled = document.getElementById('smart-notifications-toggle').checked;
+            localStorage.setItem('smartNotificationsEnabled', enabled);
+            alert(enabled ? 'تم تفعيل الإشعارات الذكية' : 'تم إيقاف الإشعارات الذكية');
+        }
+
+        function clearAllNotifications() {
+            if (confirm('هل أنت متأكد من حذف جميع الإشعارات؟')) {
+                notifications = [];
+                updateNotificationBadge();
+                renderNotifications();
+                saveNotifications();
+                alert('تم حذف جميع الإشعارات');
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.getElementById('dark-mode-toggle').checked;
+            document.body.classList.toggle('dark-mode', isDark);
+            localStorage.setItem('darkMode', isDark);
+            alert(isDark ? 'تم تفعيل الوضع الليلي' : 'تم تفعيل الوضع النهاري');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        function setupConnectionMonitoring() {
+            const connectedRef = database.ref('.info/connected');
+            connectedRef.on('value', (snapshot) => {
+                isConnected = snapshot.val() === true;
+                updateConnectionStatus();
+                if (isConnected && currentLawyer) {
+                    loadLawyerCases();
+                    // إعداد مراقبة الإشعارات عند الاتصال
+                    setupNotificationListeners();
+                }
+            });
+
+            // مراقبة التحديثات من التطبيق الرئيسي
+            database.ref('system/updates').on('child_added', (snapshot) => {
+                const update = snapshot.val();
+                if (update && update.source === 'main_app' && currentLawyer) {
+                    handleMainAppUpdate(update, snapshot.key);
+                }
+            });
+
+            database.ref('system/lastUpdate').on('value', (snapshot) => {
+                if (currentLawyer) {
+                    loadLawyerCases();
+                }
+            });
+        }
+
+        function handleMainAppUpdate(update, updateKey) {
+            console.log('🏢 تحديث من التطبيق الرئيسي:', update);
+            
+            if (update.type === 'case_status_update') {
+                // البحث عن الدعوى وتحديثها في البيانات المحلية
+                const caseIndex = allCases.findIndex(c => 
+                    c.caseNumber === update.caseNumber || 
+                    c.id === update.caseId ||
+                    c.firebaseId === update.caseId
+                );
+
+                if (caseIndex >= 0) {
+                    allCases[caseIndex].status = update.newStatus;
+                    allCases[caseIndex].stage = update.newStage;
+                    allCases[caseIndex].lastModified = update.timestamp;
+                    allCases[caseIndex].updatedBy = update.updatedBy;
+                    allCases[caseIndex].updatedFrom = 'main_app';
+
+                    // تحديث العرض
+                    filteredCases = [...allCases];
+                    renderCases();
+
+                    // إظهار إشعار
+                    alert(`🔄 تم تحديث الدعوى ${update.caseNumber} من النظام الرئيسي\n📊 الحالة: ${update.newStatus}\n🎯 المرحلة: ${update.newStage}`);
+                }
+            }
+
+            // حذف الإشعار بعد المعالجة
+            database.ref(`system/updates/${updateKey}`).remove();
+        }
+
+        function updateConnectionStatus() {
+            const statusEl = document.getElementById('connection-status');
+            if (isConnected && navigator.onLine) {
+                statusEl.textContent = 'متصل بـ Firebase';
+                statusEl.style.color = 'var(--success)';
+            } else {
+                statusEl.textContent = 'غير متصل';
+                statusEl.style.color = 'var(--danger)';
+            }
+        }
+
+        function checkLoginStatus() {
+            const savedLawyer = localStorage.getItem('currentLawyer');
+            if (savedLawyer) {
+                console.log('📂 استرداد بيانات المحامي المحفوظة');
+                currentLawyer = JSON.parse(savedLawyer);
+                
+                // إضافة معرّف فريد إذا لم يكن موجوداً
+                if (!currentLawyer.id) {
+                    currentLawyer.id = currentLawyer.license || Date.now().toString();
+                    localStorage.setItem('currentLawyer', JSON.stringify(currentLawyer));
+                }
+                
+                console.log('👤 المحامي المحفوظ:', currentLawyer.name, 'ID:', currentLawyer.id);
+                showMainApp();
+                updateLawyerInfo();
+                
+                // انتظار الاتصال ثم تحميل الدعاوى
+                if (isConnected) {
+                    loadLawyerCases();
+                } else {
+                    console.log('⏳ انتظار الاتصال بـ Firebase...');
+                    // إعادة المحاولة كل ثانيتين
+                    const connectionCheck = setInterval(() => {
+                        if (isConnected) {
+                            clearInterval(connectionCheck);
+                            console.log('✅ تم الاتصال، تحميل الدعاوى...');
+                            loadLawyerCases();
+                        }
+                    }, 2000);
+                    
+                    // إيقاف المحاولة بعد 30 ثانية
+                    setTimeout(() => {
+                        clearInterval(connectionCheck);
+                        if (!isConnected) {
+                            console.log('❌ انتهت مهلة انتظار الاتصال');
+                            alert('لا يمكن الاتصال بالخادم، يرجى التحقق من الإنترنت');
+                        }
+                    }, 30000);
+                }
+            } else {
+                console.log('👤 لا توجد بيانات محامي محفوظة');
+                showLoginScreen();
+            }
+        }
+
+        async function login() {
+            const licenseNumber = document.getElementById('license-number').value.trim();
+            const phoneNumber = document.getElementById('phone-number').value.trim();
+            const loginBtn = document.getElementById('login-btn');
+
+            if (!licenseNumber || !phoneNumber) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+
+            try {
+                console.log('🔍 البحث عن المحامي برقم الترخيص:', licenseNumber, 'والهاتف:', phoneNumber);
+                
+                let lawyersSnapshot = await database.ref('data/lawyers').once('value');
+                let lawyers = lawyersSnapshot.val();
+                
+                console.log('📊 المحامون في data/lawyers:', lawyers ? (Array.isArray(lawyers) ? lawyers.length : Object.keys(lawyers).length) : 0);
+                
+                if (!lawyers) {
+                    console.log('⚠️ لا توجد بيانات في data/lawyers، البحث في lawyers...');
+                    lawyersSnapshot = await database.ref('lawyers').once('value');
+                    lawyers = lawyersSnapshot.val();
+                    console.log('📊 المحامون في lawyers:', lawyers ? (Array.isArray(lawyers) ? lawyers.length : Object.keys(lawyers).length) : 0);
+                }
+
+                let foundLawyer = null;
+                if (lawyers) {
+                    if (Array.isArray(lawyers)) {
+                        lawyers.forEach((lawyer, index) => {
+                            if (lawyer && lawyer.license === licenseNumber && lawyer.phone === phoneNumber) {
+                                console.log('✅ عثر على المحامي في الفهرس:', index, lawyer.name);
+                                foundLawyer = lawyer;
+                            }
+                        });
+                    } else {
+                        Object.entries(lawyers).forEach(([key, lawyer]) => {
+                            if (lawyer && lawyer.license === licenseNumber && lawyer.phone === phoneNumber) {
+                                console.log('✅ عثر على المحامي بالمفتاح:', key, lawyer.name);
+                                foundLawyer = lawyer;
+                            }
+                        });
+                    }
+                }
+
+                if (foundLawyer) {
+                    console.log('🎉 تم العثور على المحامي:', foundLawyer.name);
+                    
+                    // إضافة معرّف فريد إذا لم يكن موجوداً
+                    if (!foundLawyer.id) {
+                        foundLawyer.id = foundLawyer.license || Date.now().toString();
+                    }
+                    
+                    currentLawyer = foundLawyer;
+                    localStorage.setItem('currentLawyer', JSON.stringify(foundLawyer));
+                    
+                    updateLawyerInfo();
+                    showMainApp();
+                    loadLawyerCases();
+                    alert(`مرحباً ${foundLawyer.name}`);
+                } else {
+                    console.log('❌ لم يتم العثور على المحامي');
+                    
+                    // إظهار تفاصيل المحامين المتاحين للتشخيص
+                    if (lawyers) {
+                        console.log('📋 المحامون المتاحون:');
+                        if (Array.isArray(lawyers)) {
+                            lawyers.forEach((lawyer, index) => {
+                                if (lawyer) {
+                                    console.log(`${index}: ${lawyer.name} - ترخيص: ${lawyer.license} - هاتف: ${lawyer.phone}`);
+                                }
+                            });
+                        } else {
+                            Object.entries(lawyers).forEach(([key, lawyer]) => {
+                                if (lawyer) {
+                                    console.log(`${key}: ${lawyer.name} - ترخيص: ${lawyer.license} - هاتف: ${lawyer.phone}`);
+                                }
+                            });
+                        }
+                    }
+                    
+                    alert('بيانات المحامي غير صحيحة\nتحقق من رقم الترخيص ورقم الهاتف');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل الدخول:', error);
+                alert('خطأ في تسجيل الدخول: ' + error.message);
+            }
+
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentLawyer');
+            currentLawyer = null;
+            allCases = [];
+            filteredCases = [];
+            showLoginScreen();
+            alert('تم تسجيل الخروج بنجاح');
+        }
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        function updateLawyerInfo() {
+            if (currentLawyer) {
+                document.getElementById('lawyer-info').textContent = `المحامي: ${currentLawyer.name}`;
+            }
+        }
+
+        async function loadLawyerCases() {
+            if (!currentLawyer) {
+                console.log('❌ لا يوجد محامي مسجل دخول');
+                return;
+            }
+            
+            if (!isConnected) {
+                console.log('❌ غير متصل بـ Firebase');
+                document.getElementById('loading').classList.add('hidden');
+                return;
+            }
+
+            console.log('🔄 تحميل دعاوى المحامي:', currentLawyer.name);
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                // البحث في جميع المسارات الممكنة
+                const searchPaths = ['data/cases', 'cases'];
+                let allFirebaseCases = [];
+                
+                for (const path of searchPaths) {
+                    try {
+                        console.log(`🔍 البحث في المسار: ${path}`);
+                        const snapshot = await database.ref(path).once('value');
+                        const cases = snapshot.val();
+                        
+                        if (cases) {
+                            console.log(`📊 عدد العناصر في ${path}:`, Array.isArray(cases) ? cases.length : Object.keys(cases).length);
+                            
+                            if (Array.isArray(cases)) {
+                                cases.forEach((caseItem, index) => {
+                                    if (caseItem && !caseItem.deleted) {
+                                        caseItem.sourceIndex = index;
+                                        caseItem.sourcePath = path;
+                                        allFirebaseCases.push(caseItem);
+                                    }
+                                });
+                            } else {
+                                Object.entries(cases).forEach(([id, caseItem]) => {
+                                    if (caseItem && !caseItem.deleted) {
+                                        caseItem.firebaseId = id;
+                                        caseItem.sourcePath = path;
+                                        if (!caseItem.id) caseItem.id = id;
+                                        allFirebaseCases.push(caseItem);
+                                    }
+                                });
+                            }
+                        } else {
+                            console.log(`⚠️ لا توجد بيانات في ${path}`);
+                        }
+                    } catch (error) {
+                        console.warn(`❌ خطأ في الوصول إلى ${path}:`, error.message);
+                    }
+                }
+
+                console.log(`📋 إجمالي الدعاوى من جميع المسارات: ${allFirebaseCases.length}`);
+
+                // تصفية الدعاوى للمحامي الحالي
+                allCases = [];
+                const currentLawyerName = currentLawyer.name.trim();
+                
+                console.log('🔍 البحث عن دعاوى المحامي:', currentLawyerName);
+                
+                allFirebaseCases.forEach((caseItem, index) => {
+                    if (caseItem.lawyerName) {
+                        const caseLawyerName = caseItem.lawyerName.trim();
+                        console.log(`📝 ${index + 1}. دعوى ${caseItem.caseNumber} - المحامي: "${caseLawyerName}" (مقارنة مع: "${currentLawyerName}")`);
+                        
+                        // مقارنة دقيقة للأسماء
+                        if (caseLawyerName === currentLawyerName) {
+                            console.log(`✅ تطابق! إضافة دعوى ${caseItem.caseNumber}`);
+                            allCases.push(caseItem);
+                        } else {
+                            console.log(`❌ لا يطابق - متوقع: "${currentLawyerName}" وجد: "${caseLawyerName}"`);
+                        }
+                    } else {
+                        console.log(`⚠️ ${index + 1}. دعوى ${caseItem.caseNumber} - لا يوجد محامي مرتبط`);
+                    }
+                });
+
+                console.log(`📋 النتيجة النهائية: ${allCases.length} دعوى للمحامي ${currentLawyerName}`);
+                
+                if (allCases.length === 0) {
+                    console.log('🔍 محاولة بحث بديلة بتجاهل المسافات والحروف الخاصة...');
+                    
+                    // بحث بديل بتنظيف النصوص
+                    allFirebaseCases.forEach((caseItem) => {
+                        if (caseItem.lawyerName) {
+                            const cleanCurrentName = currentLawyerName.replace(/\s+/g, '').toLowerCase();
+                            const cleanCaseName = caseItem.lawyerName.replace(/\s+/g, '').toLowerCase();
+                            
+                            if (cleanCaseName.includes(cleanCurrentName) || cleanCurrentName.includes(cleanCaseName)) {
+                                console.log(`� تطابق تقريبي! إضافة دعوى ${caseItem.caseNumber}`);
+                                allCases.push(caseItem);
+                            }
+                        }
+                    });
+                }
+                
+                filteredCases = [...allCases];
+                renderCases();
+                populateCaseSelector();
+                
+                // فحص التحديثات المعلقة
+                await checkPendingUpdatesFromMainApp();
+                
+                // فحص الإشعارات الذكية
+                setTimeout(() => {
+                    checkSmartNotifications();
+                }, 2000);
+
+                // تهيئة نظام الدردشة
+                setTimeout(() => {
+                    initializeChat();
+                }, 1000);
+                
+                document.getElementById('loading').classList.add('hidden');
+                
+                // إظهار رسالة إذا لم توجد دعاوى
+                if (allCases.length === 0) {
+                    console.log('⚠️ لم يتم العثور على أي دعاوى للمحامي');
+                    alert(`لم يتم العثور على دعاوى للمحامي "${currentLawyerName}"\n\nتأكد من:\n1. أن الدعاوى مُسجلة باسمك الصحيح\n2. وجود اتصال بالإنترنت\n3. صحة بيانات تسجيل الدخول`);
+                }
+                
+            } catch (error) {
+                console.error('❌ خطأ عام في تحميل الدعاوى:', error);
+                alert('خطأ في تحميل الدعاوى: ' + error.message);
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // فحص التحديثات المعلقة من التطبيق الرئيسي
+        async function checkPendingUpdatesFromMainApp() {
+            try {
+                const updatesSnapshot = await database.ref('system/updates').once('value');
+                const updates = updatesSnapshot.val();
+                
+                if (updates) {
+                    let appliedUpdates = 0;
+                    
+                    Object.entries(updates).forEach(([key, update]) => {
+                        if (update.source === 'main_app' && update.type === 'case_status_update') {
+                            // البحث عن الدعوى المطابقة
+                            const caseIndex = allCases.findIndex(c => 
+                                c.caseNumber === update.caseNumber || 
+                                c.id === update.caseId ||
+                                c.firebaseId === update.caseId
+                            );
+
+                            if (caseIndex >= 0) {
+                                console.log('تطبيق تحديث معلق للدعوى:', update.caseNumber);
+                                
+                                allCases[caseIndex].status = update.newStatus;
+                                allCases[caseIndex].stage = update.newStage;
+                                allCases[caseIndex].lastModified = update.timestamp;
+                                allCases[caseIndex].updatedBy = update.updatedBy;
+                                allCases[caseIndex].updatedFrom = 'main_app';
+                                
+                                appliedUpdates++;
+                            }
+                            
+                            // حذف التحديث المعالج
+                            database.ref(`system/updates/${key}`).remove();
+                        }
+                    });
+                    
+                    if (appliedUpdates > 0) {
+                        filteredCases = [...allCases];
+                        renderCases();
+                        
+                        alert(`تم تطبيق ${appliedUpdates} تحديث معلق من النظام الرئيسي`);
+                    }
+                }
+            } catch (error) {
+                console.error('خطأ في فحص التحديثات المعلقة:', error);
+            }
+        }
+
+        function renderCases() {
+            console.log('🎨 عرض الدعاوى - العدد:', filteredCases.length);
+            
+            const container = document.getElementById('cases-container');
+            const emptyState = document.getElementById('empty-state');
+
+            if (filteredCases.length === 0) {
+                console.log('📭 لا توجد دعاوى للعرض');
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            container.innerHTML = filteredCases.map((caseItem, index) => {
+                console.log(`📋 ${index + 1}. عرض الدعوى:`, caseItem.caseNumber, 'الحالة:', caseItem.status, 'المرحلة:', caseItem.stage);
+                
+                const caseId = caseItem.id || caseItem.firebaseId || caseItem.caseNumber;
+                return `
+                <div class="case-card" onclick="showCaseDetails('${caseId}')">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span class="case-number">${caseItem.caseNumber}</span>
+                        <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                            <span class="case-status status-${caseItem.status.replace(/\s+/g, '-')}">${caseItem.status}</span>
+                            ${caseItem.stage ? `<span style="background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; padding: 0.3rem 0.6rem; border-radius: 0.8rem; font-size: 0.7rem; font-weight: 600; text-align: center;">${caseItem.stage}</span>` : ''}
+                        </div>
+                    </div>
+                    <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 0.9rem;">${caseItem.subject || 'بدون موضوع'}</h3>
+                    <div style="margin-bottom: 1rem; color: var(--gray); font-size: 0.875rem;">
+                        <div style="margin-bottom: 0.6rem;"><i class="fas fa-user"></i> المدعي: ${caseItem.plaintiffName}</div>
+                        <div style="margin-bottom: 0.6rem;"><i class="fas fa-user-tie"></i> المدعى عليه: ${caseItem.defendantName}</div>
+                        <div><i class="fas fa-calendar"></i> التسجيل: ${formatDate(caseItem.fileDate)}</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, var(--success-light), rgba(16, 185, 129, 0.1)); color: var(--success); padding: 0.8rem; border-radius: 0.9rem; text-align: center; font-weight: 900; font-size: 1.3rem; margin-bottom: 1rem;">
+                        ${formatNumber(caseItem.amount)} د.ع
+                    </div>
+                    ${caseItem.deductions > 0 ? `
+                    <div style="background: linear-gradient(135deg, var(--success-light), rgba(16, 185, 129, 0.1)); color: var(--success); padding: 0.7rem; border-radius: 0.9rem; text-align: center; font-weight: 700; font-size: 0.9rem; margin-bottom: 1rem;">
+                        💰 إجمالي الاستقطاعات: ${formatNumber(caseItem.deductions)} د.ع
+                    </div>
+                    ` : ''}
+                    <div style="display: flex; gap: 0.6rem;">
+                        <button style="flex: 1; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.6rem; border-radius: 0.9rem; cursor: pointer; font-size: 0.85rem;" onclick="event.stopPropagation(); showUpdateStatusModal('${caseId}')">
+                            <i class="fas fa-edit"></i> تحديث
+                        </button>
+                        <button style="flex: 1; background: linear-gradient(135deg, var(--success), #059669); color: white; border: none; padding: 0.6rem; border-radius: 0.9rem; cursor: pointer; font-size: 0.85rem;" onclick="event.stopPropagation(); showAddDeductionModal('${caseId}')">
+                            <i class="fas fa-plus"></i> استقطاع
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            console.log('✅ تم عرض', filteredCases.length, 'دعوى بنجاح');
+        }
+
+        function searchCases() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredCases = [...allCases];
+            } else {
+                filteredCases = allCases.filter(caseItem => 
+                    caseItem.caseNumber.toLowerCase().includes(searchTerm) ||
+                    caseItem.subject.toLowerCase().includes(searchTerm) ||
+                    caseItem.plaintiffName.toLowerCase().includes(searchTerm) ||
+                    caseItem.defendantName.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            renderCases();
+        }
+
+        function refreshData() {
+            console.log('🔄 إعادة تحديث البيانات...');
+            
+            if (currentLawyer) {
+                // إعادة تحميل دعاوى المحامي
+                loadLawyerCases().then(() => {
+                    showNotification('تم التحديث', 'تم تحديث البيانات بنجاح', 'success');
+                });
+                
+                // عرض تشخيص شامل
+                setTimeout(() => {
+                    showDiagnosticInfo();
+                }, 1000);
+            } else {
+                alert('يرجى تسجيل الدخول أولاً');
+            }
+        }
+
+        // دالة تشخيص شاملة
+        async function showDiagnosticInfo() {
+            console.log('🔬 بدء التشخيص الشامل...');
+            
+            try {
+                // فحص المحامين المتاحين
+                const lawyersSnapshot = await database.ref('data/lawyers').once('value');
+                const lawyers = lawyersSnapshot.val();
+                
+                console.log('👥 المحامون المتاحون:');
+                if (lawyers && Array.isArray(lawyers)) {
+                    lawyers.forEach((lawyer, index) => {
+                        if (lawyer) {
+                            console.log(`${index}: "${lawyer.name}" - ترخيص: ${lawyer.license}`);
+                        }
+                    });
+                } else if (lawyers) {
+                    Object.entries(lawyers).forEach(([id, lawyer]) => {
+                        if (lawyer) {
+                            console.log(`${id}: "${lawyer.name}" - ترخيص: ${lawyer.license}`);
+                        }
+                    });
+                }
+                
+                // فحص الدعاوى وأسماء المحامين المرتبطة
+                const casesSnapshot = await database.ref('data/cases').once('value');
+                const cases = casesSnapshot.val();
+                
+                console.log('📋 الدعاوى وأسماء المحامين المرتبطة:');
+                const lawyerNames = new Set();
+                
+                if (cases && Array.isArray(cases)) {
+                    cases.forEach((caseItem, index) => {
+                        if (caseItem && caseItem.lawyerName) {
+                            console.log(`${index}: دعوى ${caseItem.caseNumber} - المحامي: "${caseItem.lawyerName}"`);
+                            lawyerNames.add(caseItem.lawyerName);
+                        }
+                    });
+                } else if (cases) {
+                    Object.entries(cases).forEach(([id, caseItem]) => {
+                        if (caseItem && caseItem.lawyerName) {
+                            console.log(`${id}: دعوى ${caseItem.caseNumber} - المحامي: "${caseItem.lawyerName}"`);
+                            lawyerNames.add(caseItem.lawyerName);
+                        }
+                    });
+                }
+                
+                console.log('👤 المحامي الحالي:', `"${currentLawyer.name}"`);
+                console.log('📝 أسماء المحامين الفريدة في الدعاوى:', Array.from(lawyerNames));
+                
+                // تحقق من التطابق
+                const exactMatch = Array.from(lawyerNames).find(name => name === currentLawyer.name);
+                const partialMatch = Array.from(lawyerNames).find(name => 
+                    name.includes(currentLawyer.name) || currentLawyer.name.includes(name)
+                );
+                
+                console.log('🎯 تطابق دقيق:', exactMatch || 'لا يوجد');
+                console.log('🎯 تطابق جزئي:', partialMatch || 'لا يوجد');
+                
+            } catch (error) {
+                console.error('❌ خطأ في التشخيص:', error);
+            }
+        }
+
+        // دالة لعرض جميع الدعاوى (للتشخيص فقط)
+        async function showAllCasesForDebug() {
+            console.log('🔍 عرض جميع الدعاوى للتشخيص...');
+            
+            try {
+                const casesSnapshot = await database.ref('data/cases').once('value');
+                const cases = casesSnapshot.val();
+                
+                if (cases) {
+                    // عرض جميع الدعاوى مؤقتاً
+                    if (Array.isArray(cases)) {
+                        filteredCases = cases.filter(c => c && !c.deleted);
+                    } else {
+                        filteredCases = Object.values(cases).filter(c => c && !c.deleted);
+                    }
+                    
+                    console.log('🎯 عرض جميع الدعاوى:', filteredCases.length);
+                    renderCases();
+                    
+                    alert(`تم العثور على ${filteredCases.length} دعوى إجمالية\nتحقق من أسماء المحامين في Console`);
+                    
+                    // عرض تفاصيل المحامين
+                    filteredCases.forEach((caseItem, index) => {
+                        console.log(`${index + 1}. دعوى ${caseItem.caseNumber} - المحامي: "${caseItem.lawyerName}"`);
+                    });
+                } else {
+                    alert('لا توجد دعاوى في قاعدة البيانات');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في عرض جميع الدعاوى:', error);
+                alert('خطأ في تحميل الدعاوى: ' + error.message);
+            }
+        }
+
+        function showCaseDetails(caseId) {
+            let caseItem = allCases.find(c => (c.id && c.id.toString() === caseId.toString()) || (c.firebaseId && c.firebaseId.toString() === caseId.toString()) || c.caseNumber === caseId);
+            if (!caseItem) return;
+
+            document.getElementById('case-details-title').textContent = `الدعوى رقم ${caseItem.caseNumber}`;
+            document.getElementById('case-details-body').innerHTML = `
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>الموضوع:</strong> ${caseItem.subject}
+                </div>
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>الحالة:</strong> 
+                    <span class="case-status status-${caseItem.status.replace(/\s+/g, '-')}" style="margin-right: 0.5rem;">${caseItem.status}</span>
+                </div>
+                ${caseItem.stage ? `
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>المرحلة:</strong> 
+                    <span style="background: linear-gradient(135deg, var(--secondary), #7c3aed); color: white; padding: 0.3rem 0.6rem; border-radius: 0.8rem; font-size: 0.8rem; font-weight: 600;">${caseItem.stage}</span>
+                </div>
+                ` : ''}
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>المدعي:</strong> ${caseItem.plaintiffName}
+                </div>
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>المدعى عليه:</strong> ${caseItem.defendantName}
+                </div>
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>المبلغ:</strong> ${formatNumber(caseItem.amount)} د.ع
+                </div>
+                <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
+                    <strong>المحكمة:</strong> ${caseItem.courtName}
+                </div>
+                ${caseItem.deductions > 0 ? `
+                <div style="padding: 0.9rem 0;">
+                    <strong>إجمالي الاستقطاعات:</strong> ${formatNumber(caseItem.deductions)} د.ع
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('case-details-modal').classList.add('active');
+        }
+
+        function showUpdateStatusModal(caseId) {
+            selectedCaseId = caseId;
+            let caseItem = allCases.find(c => (c.id && c.id.toString() === caseId.toString()) || (c.firebaseId && c.firebaseId.toString() === caseId.toString()) || c.caseNumber === caseId);
+            if (!caseItem) return;
+
+            document.getElementById('new-status').value = caseItem.status;
+            document.getElementById('new-stage').value = caseItem.stage || 'إعداد الدعوى';
+            document.getElementById('status-notes').value = '';
+            document.getElementById('update-status-modal').classList.add('active');
+        }
+
+        async function updateCaseStatus() {
+            if (!selectedCaseId) return;
+
+            const newStatus = document.getElementById('new-status').value;
+            const newStage = document.getElementById('new-stage').value;
+            const notes = document.getElementById('status-notes').value.trim();
+
+            if (!newStatus || !newStage) {
+                alert('يرجى اختيار الحالة والمرحلة الجديدة');
+                return;
+            }
+
+            try {
+                let caseItem = allCases.find(c => (c.id && c.id.toString() === selectedCaseId.toString()) || (c.firebaseId && c.firebaseId.toString() === selectedCaseId.toString()) || c.caseNumber === selectedCaseId);
+                const actualCaseId = caseItem ? (caseItem.firebaseId || caseItem.id || caseItem.caseNumber) : selectedCaseId;
+
+                const updateData = {
+                    status: newStatus,
+                    stage: newStage,
+                    lastModified: new Date().toISOString(),
+                    updatedBy: currentLawyer.name,
+                    updatedFrom: 'mobile_app'
+                };
+
+                if (notes && caseItem) {
+                    if (!caseItem.timeline) caseItem.timeline = [];
+                    caseItem.timeline.push({
+                        date: new Date().toISOString().split('T')[0],
+                        title: `تحديث من المحامي: ${currentLawyer.name}`,
+                        desc: `الحالة: ${newStatus} | المرحلة: ${newStage}${notes ? ` - ${notes}` : ''}`,
+                        type: 'blue'
+                    });
+                    updateData.timeline = caseItem.timeline;
+                    updateData.notes = notes;
+                }
+
+                // تحديث في جميع المسارات الممكنة لضمان الثبات
+                const updatePromises = [];
+                
+                try {
+                    // البحث في المسار الأول
+                    const casesSnapshot = await database.ref('data/cases').once('value');
+                    const cases = casesSnapshot.val();
+                    
+                    if (Array.isArray(cases)) {
+                        const caseIndex = cases.findIndex(c => 
+                            c.id === actualCaseId || 
+                            c.caseNumber === actualCaseId ||
+                            c.caseNumber === caseItem?.caseNumber
+                        );
+                        if (caseIndex >= 0) {
+                            console.log('تحديث في data/cases index:', caseIndex);
+                            updatePromises.push(database.ref(`data/cases/${caseIndex}`).update(updateData));
+                        }
+                    } else if (cases) {
+                        // إذا كان cases كائن وليس مصفوفة
+                        Object.entries(cases).forEach(([key, case_]) => {
+                            if (case_.id === actualCaseId || case_.caseNumber === actualCaseId || case_.caseNumber === caseItem?.caseNumber) {
+                                console.log('تحديث في data/cases key:', key);
+                                updatePromises.push(database.ref(`data/cases/${key}`).update(updateData));
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn('خطأ في البحث في data/cases:', e);
+                }
+
+                // التحديث في المسار البديل
+                try {
+                    console.log('تحديث في cases/', actualCaseId);
+                    updatePromises.push(database.ref(`cases/${actualCaseId}`).update(updateData));
+                } catch (e) {
+                    console.warn('خطأ في التحديث في cases:', e);
+                }
+
+                // تنفيذ جميع التحديثات
+                await Promise.allSettled(updatePromises);
+                console.log('تم تنفيذ', updatePromises.length, 'تحديث في Firebase');
+
+                // إرسال إشعار للتطبيق الرئيسي
+                await database.ref('system/updates').push({
+                    type: 'case_status_update',
+                    caseId: actualCaseId,
+                    caseNumber: caseItem ? caseItem.caseNumber : selectedCaseId,
+                    lawyerName: currentLawyer.name,
+                    newStatus: newStatus,
+                    newStage: newStage,
+                    notes: notes,
+                    timestamp: new Date().toISOString(),
+                    source: 'mobile_app'
+                });
+
+                // تحديث تاريخ آخر تعديل في النظام
+                await database.ref('system/lastUpdate').set({
+                    timestamp: new Date().toISOString(),
+                    source: 'mobile_app',
+                    action: 'status_stage_update',
+                    lawyerName: currentLawyer.name,
+                    caseNumber: caseItem ? caseItem.caseNumber : selectedCaseId
+                });
+
+                if (caseItem) {
+                    Object.assign(caseItem, updateData);
+                    filteredCases = [...allCases];
+                    renderCases();
+                }
+
+                closeModal('update-status-modal');
+                alert(`تم تحديث الدعوى بنجاح\nالحالة: ${newStatus}\nالمرحلة: ${newStage}`);
+            } catch (error) {
+                console.error('Error updating case status:', error);
+                alert('خطأ في تحديث حالة الدعوى');
+            }
+        }
+
+        function populateCaseSelector() {
+            const selector = document.getElementById('deduction-case');
+            selector.innerHTML = '<option value="">اختر الدعوى...</option>';
+            
+            allCases.forEach(caseItem => {
+                const caseId = caseItem.id || caseItem.firebaseId || caseItem.caseNumber;
+                selector.innerHTML += `<option value="${caseId}">${caseItem.caseNumber} - ${caseItem.plaintiffName}</option>`;
+            });
+        }
+
+        function showAddDeductionModal(preSelectedCaseId = null) {
+            populateCaseSelector();
+            
+            if (preSelectedCaseId) {
+                document.getElementById('deduction-case').value = preSelectedCaseId;
+            } else {
+                document.getElementById('deduction-case').value = '';
+            }
+            
+            document.getElementById('deduction-amount').value = '';
+            document.getElementById('deduction-notes').value = '';
+            document.getElementById('add-deduction-modal').classList.add('active');
+        }
+
+        async function addDeduction() {
+            const caseId = document.getElementById('deduction-case').value;
+            const amount = parseInt(document.getElementById('deduction-amount').value);
+            const date = document.getElementById('deduction-date').value;
+            const source = document.getElementById('deduction-source').value;
+            const notes = document.getElementById('deduction-notes').value.trim();
+
+            if (!caseId || !amount || !date || !source) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            if (amount <= 0) {
+                alert('يرجى إدخال مبلغ صحيح');
+                return;
+            }
+
+            let selectedCase = allCases.find(c => (c.id && c.id.toString() === caseId.toString()) || (c.firebaseId && c.firebaseId.toString() === caseId.toString()) || c.caseNumber === caseId);
+
+            if (!selectedCase) {
+                alert('الدعوى المختارة غير صحيحة');
+                return;
+            }
+
+            try {
+                const deductionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                const actualCaseId = selectedCase.firebaseId || selectedCase.id || selectedCase.caseNumber;
+                
+                const deductionData = {
+                    id: deductionId,
+                    caseId: actualCaseId,
+                    caseNumber: selectedCase.caseNumber,
+                    plaintiffName: selectedCase.plaintiffName,
+                    amount: amount,
+                    date: date,
+                    source: source,
+                    status: 'مستلم',
+                    notes: notes || '',
+                    lawyerName: currentLawyer.name,
+                    createdAt: new Date().toISOString(),
+                    lastModified: new Date().toISOString(),
+                    addedVia: 'mobile_app'
+                };
+
+                await database.ref(`data/deductions/${deductionId}`).set(deductionData);
+                await database.ref(`deductions/${deductionId}`).set(deductionData);
+
+                const updatedDeductions = (selectedCase.deductions || 0) + amount;
+                const updateData = {
+                    deductions: updatedDeductions,
+                    lastModified: new Date().toISOString()
+                };
+
+                if (!selectedCase.timeline) selectedCase.timeline = [];
+                selectedCase.timeline.push({
+                    date: date,
+                    title: 'استقطاع جديد',
+                    desc: `تم استقطاع ${formatNumber(amount)} د.ع من ${source}${notes ? ` - ${notes}` : ''}`,
+                    type: 'green'
+                });
+                updateData.timeline = selectedCase.timeline;
+
+                try {
+                    await database.ref(`cases/${actualCaseId}`).update(updateData);
+                } catch (e) {
+                    const casesSnapshot = await database.ref('data/cases').once('value');
+                    const cases = casesSnapshot.val();
+                    
+                    if (cases && Array.isArray(cases)) {
+                        const caseIndex = cases.findIndex(c => c.id === actualCaseId || c.caseNumber === actualCaseId);
+                        if (caseIndex >= 0) {
+                            await database.ref(`data/cases/${caseIndex}`).update(updateData);
+                        }
+                    }
+                }
+
+                selectedCase.deductions = updatedDeductions;
+                selectedCase.lastModified = new Date().toISOString();
+                selectedCase.timeline = updateData.timeline;
+
+                await database.ref('system/lastUpdate').set({
+                    timestamp: new Date().toISOString(),
+                    source: 'mobile_app',
+                    action: 'deduction_added',
+                    lawyerName: currentLawyer.name
+                });
+
+                renderCases();
+                closeModal('add-deduction-modal');
+                alert(`تم إضافة الاستقطاع بنجاح - ${formatNumber(amount)} د.ع`);
+                
+                setTimeout(() => {
+                    loadLawyerCases();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error adding deduction:', error);
+                alert('خطأ في إضافة الاستقطاع');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            selectedCaseId = null;
+        }
+
+        function formatNumber(number) {
+            return new Intl.NumberFormat('ar-IQ').format(number);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-IQ');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+            
+            // إغلاق الإشعارات عند النقر خارجها
+            const notificationsPanel = document.getElementById('notifications-panel');
+            const notificationBell = document.getElementById('notification-bell');
+            
+            if (notificationsPanel && notificationsPanel.classList.contains('show') && 
+                !notificationsPanel.contains(e.target) && 
+                !notificationBell.contains(e.target)) {
+                notificationsPanel.classList.remove('show');
+            }
+        });
+
+        // Chat Functions
+        let chatMessages = [];
+        let isChatOpen = false;
+
+        // Save and load chat messages locally
+        function saveChatMessagesLocally() {
+            if (currentLawyer && chatMessages.length > 0) {
+                localStorage.setItem(`chatMessages_${currentLawyer.id}`, JSON.stringify(chatMessages));
+                console.log('💾 تم حفظ', chatMessages.length, 'رسالة محلياً');
+            }
+        }
+
+        function loadChatMessagesLocally() {
+            if (currentLawyer) {
+                const saved = localStorage.getItem(`chatMessages_${currentLawyer.id}`);
+                if (saved) {
+                    chatMessages = JSON.parse(saved);
+                    console.log('📂 تم استرداد', chatMessages.length, 'رسالة محلياً');
+                    renderChatMessages();
+                    updateChatBadge();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function toggleChat() {
+            const chatPanel = document.getElementById('chat-panel');
+            const chatBadge = document.getElementById('chat-badge');
+            
+            isChatOpen = !isChatOpen;
+            
+            if (isChatOpen) {
+                chatPanel.classList.add('show');
+                loadChatMessages();
+                // Mark messages as read
+                markChatMessagesAsRead();
+            } else {
+                chatPanel.classList.remove('show');
+            }
+        }
+
+        function loadChatMessages() {
+            if (!database || !currentLawyer) return;
+
+            console.log('🔄 تحميل رسائل الدردشة للمحامي:', currentLawyer.name);
+
+            // Load cached messages first for better UX
+            loadChatMessagesLocally();
+
+            // Listen for messages from admin in lawyer's directory
+            database.ref(`chat/${currentLawyer.id}/messages`).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const messages = Object.values(snapshot.val());
+                    const lawyerMessages = messages.filter(msg => msg.from === 'admin' && msg.to === currentLawyer.id);
+                    
+                    // Listen for messages from admin in admin directory
+                    database.ref('chat/admin/messages').orderByChild('to').equalTo(currentLawyer.id).on('value', (adminSnapshot) => {
+                        const adminMessages = adminSnapshot.exists() ? Object.values(adminSnapshot.val()) : [];
+                        
+                        // Listen for lawyer's own sent messages
+                        database.ref('chat/admin/messages').orderByChild('from').equalTo(currentLawyer.id).on('value', (sentSnapshot) => {
+                            const sentMessages = sentSnapshot.exists() ? Object.values(sentSnapshot.val()) : [];
+                            
+                            // Combine all messages
+                            chatMessages = [...lawyerMessages, ...adminMessages, ...sentMessages]
+                                .filter((msg, index, self) => 
+                                    index === self.findIndex(m => m.id === msg.id)
+                                ) // Remove duplicates
+                                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                            
+                            renderChatMessages();
+                            updateChatBadge();
+                            saveChatMessagesLocally(); // Save after loading from Firebase
+                        });
+                    });
+                } else {
+                    // No messages in lawyer directory, check admin directory only
+                    database.ref('chat/admin/messages').orderByChild('to').equalTo(currentLawyer.id).on('value', (adminSnapshot) => {
+                        const adminMessages = adminSnapshot.exists() ? Object.values(adminSnapshot.val()) : [];
+                        
+                        // Also get sent messages
+                        database.ref('chat/admin/messages').orderByChild('from').equalTo(currentLawyer.id).on('value', (sentSnapshot) => {
+                            const sentMessages = sentSnapshot.exists() ? Object.values(sentSnapshot.val()) : [];
+                            
+                            chatMessages = [...adminMessages, ...sentMessages]
+                                .filter((msg, index, self) => 
+                                    index === self.findIndex(m => m.id === msg.id)
+                                ) // Remove duplicates  
+                                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                            
+                            renderChatMessages();
+                            updateChatBadge();
+                            saveChatMessagesLocally(); // Save after loading from Firebase
+                        });
+                    });
+                }
+            });
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+
+            if (chatMessages.length === 0) {
+                container.innerHTML = `
+                    <div class="no-notifications">
+                        <i class="fas fa-comment-dots"></i>
+                        <p>لا توجد رسائل</p>
+                        <p style="font-size: 0.8rem; color: var(--gray);">ابدأ المحادثة أدناه</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = chatMessages.map(message => {
+                const isFromAdmin = message.from === 'admin';
+                const messageClass = isFromAdmin ? 'received' : 'sent';
+                
+                return `
+                    <div class="chat-message ${messageClass}">
+                        <div class="chat-message-content">
+                            <div class="chat-message-text">${message.message}</div>
+                            <div class="chat-message-time">${formatDateTime(message.timestamp)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-chat-btn');
+            
+            if (!input || !currentLawyer) return;
+
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Disable input temporarily
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            const messageData = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                message: message,
+                timestamp: new Date().toISOString(),
+                from: currentLawyer.id,
+                to: 'admin',
+                lawyerName: currentLawyer.name,
+                lawyerLicense: currentLawyer.license,
+                read: false
+            };
+
+            // Add to local messages immediately for better UX
+            chatMessages.push(messageData);
+            renderChatMessages();
+            saveChatMessagesLocally(); // Save locally immediately
+
+            console.log('📤 إرسال رسالة:', {
+                من: currentLawyer.name,
+                المحتوى: message.substring(0, 50) + (message.length > 50 ? '...' : ''),
+                الوقت: new Date().toLocaleTimeString('ar-EG')
+            });
+
+            // Send to Firebase in admin directory
+            if (database) {
+                database.ref('chat/admin/messages').push(messageData)
+                    .then(() => {
+                        console.log('✅ تم إرسال الرسالة إلى admin');
+                        showNotification('تم الإرسال', 'تم إرسال الرسالة بنجاح', 'success');
+                        saveChatMessagesLocally(); // Save again after successful send
+                    })
+                    .catch((error) => {
+                        console.error('❌ خطأ في إرسال الرسالة:', error);
+                        showNotification('خطأ', 'فشل في إرسال الرسالة', 'error');
+                        // Remove from local messages on error
+                        chatMessages = chatMessages.filter(msg => msg.id !== messageData.id);
+                        renderChatMessages();
+                        saveChatMessagesLocally();
+                    });
+
+                // Also save in lawyer's own directory for backup
+                database.ref(`chat/${currentLawyer.id}/messages`).push(messageData)
+                    .then(() => {
+                        console.log('✅ تم حفظ نسخة احتياطية في دليل المحامي');
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ فشل في حفظ النسخة الاحتياطية:', error);
+                    });
+            }
+
+            // Clear input
+            input.value = '';
+            input.disabled = false;
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        function markChatMessagesAsRead() {
+            if (!currentLawyer) return;
+            
+            chatMessages.forEach(msg => {
+                if (msg.from === 'admin' && msg.to === currentLawyer.id) {
+                    msg.read = true;
+                }
+            });
+            
+            updateChatBadge();
+        }
+
+        function updateChatBadge() {
+            const badge = document.getElementById('chat-badge');
+            if (!badge || !currentLawyer) return;
+
+            const unreadCount = chatMessages.filter(msg => 
+                msg.from === 'admin' && msg.to === currentLawyer.id && !msg.read
+            ).length;
+
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function formatDateTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit'
+            });
+        }
+
+        // Initialize chat when lawyer logs in
+        function initializeChat() {
+            if (currentLawyer) {
+                console.log('🔄 تهيئة نظام الدردشة للمحامي:', currentLawyer.name);
+                
+                // Load cached messages first
+                const hasLocalMessages = loadChatMessagesLocally();
+                if (hasLocalMessages) {
+                    console.log('📂 تم تحميل الرسائل المحفوظة محلياً');
+                }
+                
+                // Then load from Firebase
+                loadChatMessages();
+                
+                // Set up periodic refresh for real-time updates
+                setInterval(() => {
+                    if (currentLawyer && isConnected && !isChatOpen) {
+                        // Only refresh when chat is not open to avoid interrupting typing
+                        loadChatMessages();
+                    }
+                }, 15000); // Refresh every 15 seconds
+            }
+        }
+
+        // Enhanced chat loading with better error handling
+        function refreshChatMessages() {
+            if (!currentLawyer || !database) {
+                console.warn('لا يمكن تحديث الرسائل - لا يوجد محامي أو قاعدة بيانات');
+                return;
+            }
+            
+            console.log('🔄 تحديث رسائل الدردشة...');
+            loadChatMessages();
+        }
+
+        // Auto-initialize chat when connected
+        database.ref('.info/connected').on('value', (snapshot) => {
+            isConnected = snapshot.val() === true;
+            updateConnectionStatus();
+            
+            if (isConnected && currentLawyer) {
+                loadLawyerCases();
+                initializeChat(); // Initialize chat when connected
+            }
+        });
+
+        setInterval(() => {
+            if (currentLawyer && isConnected) {
+                loadLawyerCases();
+                initializeChat(); // Also initialize chat periodically
+            }
+        }, 5 * 60 * 1000);
+
+        // Save chat messages before page unload
+        window.addEventListener('beforeunload', () => {
+            saveChatMessagesLocally();
+        });
+
+        // Save chat messages periodically
+        setInterval(() => {
+            saveChatMessagesLocally();
+        }, 30000); // Save every 30 seconds
+
+        // Save chat messages when page is about to unload
+        window.addEventListener('beforeunload', () => {
+            if (currentLawyer && chatMessages.length > 0) {
+                saveChatMessagesLocally();
+            }
+        });
+
+        // Notification utility function
+        function showNotification(title, message, type = 'info') {
+            // Use browser alert as fallback
+            if (type === 'success') {
+                alert(`✅ ${title}: ${message}`);
+            } else if (type === 'error') {
+                alert(`❌ ${title}: ${message}`);
+            } else {
+                alert(`ℹ️ ${title}: ${message}`);
+            }
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        let installButton;
+
+        // Check if PWA is already installed
+        function isPWAInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true;
+        }
+
+        // Show install prompt
+        function showInstallPrompt() {
+            if (deferredPrompt && !isPWAInstalled()) {
+                // Create install button if it doesn't exist
+                if (!installButton) {
+                    installButton = document.createElement('button');
+                    installButton.innerHTML = '<i class="fas fa-download"></i> تثبيت التطبيق';
+                    installButton.className = 'install-btn';
+                    installButton.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        padding: 12px 20px;
+                        border-radius: 25px;
+                        font-size: 14px;
+                        font-weight: bold;
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                        cursor: pointer;
+                        z-index: 10000;
+                        transition: all 0.3s ease;
+                        direction: rtl;
+                        font-family: inherit;
+                    `;
+                    
+                    installButton.addEventListener('mouseover', () => {
+                        installButton.style.transform = 'translateY(-2px)';
+                        installButton.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)';
+                    });
+                    
+                    installButton.addEventListener('mouseout', () => {
+                        installButton.style.transform = 'translateY(0)';
+                        installButton.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)';
+                    });
+                    
+                    installButton.addEventListener('click', async () => {
+                        if (deferredPrompt) {
+                            deferredPrompt.prompt();
+                            const result = await deferredPrompt.userChoice;
+                            if (result.outcome === 'accepted') {
+                                console.log('PWA installed successfully');
+                                showNotification('تم التثبيت', 'تم تثبيت التطبيق بنجاح!', 'success');
+                            }
+                            deferredPrompt = null;
+                            installButton.style.display = 'none';
+                        }
+                    });
+                    
+                    document.body.appendChild(installButton);
+                }
+                installButton.style.display = 'block';
+            }
+        }
+
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallPrompt();
+        });
+
+        // Handle app installed event
+        window.addEventListener('appinstalled', (e) => {
+            console.log('PWA was installed');
+            showNotification('تم التثبيت', 'تم تثبيت التطبيق بنجاح على جهازك!', 'success');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./service-worker.js');
+                    console.log('Service Worker registered successfully:', registration);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                if (confirm('يتوفر تحديث جديد للتطبيق. هل تريد تحديث الصفحة؟')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Handle online/offline status
+        function updateOnlineStatus() {
+            const statusIndicator = document.createElement('div');
+            statusIndicator.style.cssText = `
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: bold;
+                z-index: 10001;
+                transition: all 0.3s ease;
+            `;
+            
+            if (navigator.onLine) {
+                statusIndicator.innerHTML = '🟢 متصل';
+                statusIndicator.style.background = 'var(--success-light)';
+                statusIndicator.style.color = 'var(--success)';
+            } else {
+                statusIndicator.innerHTML = '🔴 غير متصل';
+                statusIndicator.style.background = '#fee2e2';
+                statusIndicator.style.color = '#dc2626';
+            }
+            
+            // Remove existing status indicator
+            const existing = document.querySelector('.status-indicator');
+            if (existing) existing.remove();
+            
+            statusIndicator.className = 'status-indicator';
+            document.body.appendChild(statusIndicator);
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                if (statusIndicator && statusIndicator.parentNode) {
+                    statusIndicator.style.opacity = '0';
+                    setTimeout(() => {
+                        if (statusIndicator && statusIndicator.parentNode) {
+                            statusIndicator.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Initial status check
+        updateOnlineStatus();
+
+        // Check if app is in standalone mode
+        if (isPWAInstalled()) {
+            console.log('App is running in standalone mode');
+            // Add any standalone-specific functionality here
+        }
+    </script>
+</body>
+</html>

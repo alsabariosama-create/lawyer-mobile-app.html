@@ -1,0 +1,78 @@
+
+{
+  "name": "lawyer-app-osama-legal",
+  "version": "3.0.0",
+  "description": "تطبيق إدارة القضايا القانونية للمحامين - مجموعة السيد أسامة القانونية - Progressive Web App",
+  "main": "index.html",
+  "homepage": "https://your-username.github.io/LEX-CASE-main/",
+  "scripts": {
+    "start": "npx serve -s . -l 8000",
+    "dev": "npx serve -s . -l 8000 --cors",
+    "build": "echo 'No build process needed for static PWA'",
+    "test": "echo 'No tests specified'",
+    "deploy": "gh-pages -d .",
+    "validate": "npx pwa-asset-generator --help",
+    "audit": "npx lighthouse https://localhost:8000 --view",
+    "serve-https": "npx serve -s . -l 8443 --ssl-cert cert.pem --ssl-key key.pem"
+  },
+  "keywords": [
+    "lawyer",
+    "legal",
+    "case-management",
+    "pwa",
+    "progressive-web-app",
+    "firebase",
+    "arabic",
+    "mobile-app",
+    "web-app",
+    "offline-capable",
+    "installable",
+    "responsive",
+    "realtime",
+    "chat"
+  ],
+  "author": {
+    "name": "مجموعة السيد أسامة القانونية",
+    "email": "info@osamalegal.com",
+    "url": "https://osamalegal.com"
+  },
+  "contributors": [],
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "gh-pages": "^6.0.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/LEX-CASE-main.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/LEX-CASE-main/issues"
+  },
+  "pwa": {
+    "name": "تطبيق المحامين",
+    "short_name": "المحامين",
+    "description": "تطبيق إدارة القضايا القانونية",
+    "theme_color": "#6366f1",
+    "background_color": "#ffffff",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "portrait-primary"
+  },
+  "config": {
+    "port": 8000,
+    "ssl_port": 8443
+  }
+}

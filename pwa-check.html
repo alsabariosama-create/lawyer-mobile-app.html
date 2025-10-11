@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص حالة PWA - تطبيق المحامين</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-right: 4px solid #ddd;
+        }
+
+        .check-item.success {
+            border-right-color: #28a745;
+            background: #d4edda;
+        }
+
+        .check-item.error {
+            border-right-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .check-item.warning {
+            border-right-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .status-icon {
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        .success .status-icon {
+            color: #28a745;
+        }
+
+        .error .status-icon {
+            color: #dc3545;
+        }
+
+        .warning .status-icon {
+            color: #ffc107;
+        }
+
+        .check-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .check-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .install-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 10px;
+        }
+
+        .install-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .install-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .info-text {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 فحص حالة تطبيق المحامين (PWA)</h1>
+        
+        <div id="checks">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <div class="install-section">
+            <h3>تثبيت التطبيق</h3>
+            <p class="info-text">يمكنك تثبيت هذا التطبيق على جهازك للوصول السريع دون فتح المتصفح</p>
+            <button id="installBtn" class="install-btn" style="display: none;">📱 تثبيت التطبيق</button>
+            <button id="openAppBtn" class="install-btn">🚀 فتح التطبيق</button>
+        </div>
+
+        <button class="refresh-btn" onclick="location.reload()">🔄 إعادة الفحص</button>
+    </div>
+
+    <script>
+        const checks = [
+            {
+                name: 'Service Worker',
+                description: 'يتحكم في التخزين المؤقت والعمل دون اتصال',
+                test: () => 'serviceWorker' in navigator
+            },
+            {
+                name: 'Web App Manifest',
+                description: 'يحتوي على معلومات التطبيق وإعدادات التثبيت',
+                test: async () => {
+                    try {
+                        const response = await fetch('./manifest.json');
+                        return response.ok;
+                    } catch {
+                        return false;
+                    }
+                }
+            },
+            {
+                name: 'HTTPS أو Localhost',
+                description: 'مطلوب لعمل PWA بشكل صحيح',
+                test: () => location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+            },
+            {
+                name: 'وضع Standalone',
+                description: 'التطبيق يعمل كتطبيق مستقل',
+                test: () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+            },
+            {
+                name: 'إمكانية التثبيت',
+                description: 'المتصفح يدعم تثبيت التطبيق',
+                test: () => new Promise(resolve => {
+                    let canInstall = false;
+                    window.addEventListener('beforeinstallprompt', () => {
+                        canInstall = true;
+                        resolve(true);
+                    });
+                    setTimeout(() => resolve(canInstall), 1000);
+                })
+            },
+            {
+                name: 'التخزين المحلي',
+                description: 'إمكانية حفظ البيانات محلياً',
+                test: () => {
+                    try {
+                        localStorage.setItem('test', 'test');
+                        localStorage.removeItem('test');
+                        return true;
+                    } catch {
+                        return false;
+                    }
+                }
+            },
+            {
+                name: 'الإشعارات',
+                description: 'إمكانية إرسال الإشعارات',
+                test: () => 'Notification' in window
+            }
+        ];
+
+        async function runChecks() {
+            const container = document.getElementById('checks');
+            container.innerHTML = '';
+
+            for (const check of checks) {
+                const result = await check.test();
+                const item = document.createElement('div');
+                item.className = `check-item ${result ? 'success' : 'error'}`;
+                
+                item.innerHTML = `
+                    <div>
+                        <div class="check-title">${check.name}</div>
+                        <div class="check-description">${check.description}</div>
+                    </div>
+                    <div class="status-icon">${result ? '✅' : '❌'}</div>
+                `;
+                
+                container.appendChild(item);
+            }
+        }
+
+        // Install functionality
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'inline-block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                if (result.outcome === 'accepted') {
+                    alert('تم تثبيت التطبيق بنجاح! 🎉');
+                }
+                deferredPrompt = null;
+                document.getElementById('installBtn').style.display = 'none';
+            }
+        });
+
+        document.getElementById('openAppBtn').addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.querySelector('.install-section h3').textContent = '✅ التطبيق مثبت!';
+            document.querySelector('.info-text').textContent = 'التطبيق مثبت ويعمل في وضع standalone';
+        }
+
+        // Run checks on page load
+        runChecks();
+
+        // Register service worker if available
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
