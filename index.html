@@ -6,29 +6,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#6366f1">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="تطبيق المحامين">
-    <meta name="application-name" content="تطبيق المحامين">
-    <meta name="msapplication-TileColor" content="#6366f1">
-    <meta name="msapplication-TileImage" content="./icons/icon-144x144.png">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json">
-    
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="72x72" href="./icons/icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="96x96" href="./icons/icon-96x96.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="384x384" href="./icons/icon-384x384.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png">
-    
-    <!-- Standard Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-72x72.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-72x72.png">
-    
     <title>تطبيق المحامين</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
@@ -506,12 +483,38 @@
             min-width: 18px;
             text-align: center;
             animation: pulse 1.5s infinite;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); }
+        }
+
+        /* إشعارات الدردشة */
+        #chat-badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+            animation: bounceIn 0.3s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* نافذة الإشعارات */
@@ -733,7 +736,157 @@
             opacity: 0.5;
         }
 
-        /* Chat Styles */
+        /* Message Options Menu */
+        .message-options-menu {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            padding: 0.5rem;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .message-options-menu {
+            background: rgba(30, 41, 59, 0.98);
+        }
+
+        .message-options-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .message-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .message-option:hover {
+            background: var(--gray-light);
+        }
+
+        .message-option.delete {
+            color: var(--danger);
+        }
+
+        .message-option.delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .message-option.forward {
+            color: var(--primary);
+        }
+
+        .message-option.forward:hover {
+            background: var(--primary-light);
+        }
+
+        .message-option i {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Deductions Table Styles */
+        .deductions-table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        body.dark-mode .deductions-table-container {
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .deductions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .deductions-table th,
+        .deductions-table td {
+            padding: 0.75rem;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .deductions-table th {
+            background: var(--gray-light);
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .deductions-table tbody tr:hover {
+            background: var(--gray-light);
+        }
+
+        .deduction-amount {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .deduction-progress {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--gray-light);
+            border-radius: 0.75rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--success), #059669);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .case-completed {
+            background: linear-gradient(135deg, var(--success-light), rgba(16, 185, 129, 0.1));
+            border: 2px solid var(--success);
+            position: relative;
+        }
+
+        .case-completed::before {
+            content: '✅ مكتمل';
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -742,47 +895,110 @@
         }
 
         .chat-message {
-            margin-bottom: 1rem;
-            display: flex;
-            max-width: 80%;
-        }
-
-        .chat-message.sent {
-            margin-right: auto;
-            flex-direction: row-reverse;
-        }
-
-        .chat-message.received {
-            margin-left: auto;
-        }
-
-        .chat-message-content {
-            background: var(--white);
-            padding: 0.75rem 1rem;
-            border-radius: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+            display: block;
+            clear: both;
             position: relative;
         }
 
+        .chat-message.sent {
+            text-align: right;
+        }
+
         .chat-message.sent .chat-message-content {
-            background: var(--primary);
-            color: white;
-            border-bottom-left-radius: 0.25rem;
+            max-width: 70%;
+            margin-right: 8px;
+            float: right;
+        }
+
+        .chat-message.received {
+            text-align: left;
         }
 
         .chat-message.received .chat-message-content {
-            background: var(--gray-light);
-            border-bottom-right-radius: 0.25rem;
+            max-width: 70%;
+            margin-left: 8px;
+            float: left;
+        }
+
+        .chat-message-content {
+            padding: 10px 14px;
+            border-radius: 18px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            position: relative;
+            word-wrap: break-word;
+            min-width: 120px;
+        }
+
+        .chat-message.sent .chat-message-content {
+            background: #dcf8c6; /* أخضر فاتح مثل WhatsApp */
+            color: #303030;
+            border-bottom-right-radius: 6px;
+        }
+
+        .chat-message.sent .chat-message-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #dcf8c6;
+            border-bottom: 8px solid transparent;
+        }
+
+        .chat-message.received .chat-message-content {
+            background: white;
+            color: #303030;
+            border-bottom-left-radius: 6px;
+        }
+
+        .chat-message.received .chat-message-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid white;
+            border-bottom: 8px solid transparent;
         }
 
         .chat-message-text {
-            margin-bottom: 0.25rem;
-            word-wrap: break-word;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-size: 15px;
+            word-break: break-word;
+            text-align: right;
+        }
+
+        .chat-message.received .chat-message-text {
+            text-align: left;
         }
 
         .chat-message-time {
-            font-size: 0.75rem;
+            font-size: 12px;
             opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 4px;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .chat-message.received .chat-message-time {
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        .chat-message.sent .chat-message-time {
+            color: #667781;
+        }
+
+        .chat-message.received .chat-message-time {
+            color: #8696a0;
         }
 
         .chat-input-container {
@@ -831,10 +1047,412 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* مؤشرات حالة المشاهدة في الدردشة - نمط WhatsApp */
+        .read-status {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 4px;
+        }
+
+        .read-status i {
+            font-size: 12px;
+        }
+
+        .chat-message.sent:hover .read-status {
+            opacity: 1;
+        }
+
+        .chat-message.sent .read-status {
+            color: var(--primary);
+        }
+
+        .chat-message.received .read-status {
+            color: var(--success);
+        }
+
+        .delivery-status {
+            color: #999;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .delivery-status.sending {
+            color: #999;
+            animation: pulse 1.5s infinite;
+        }
+
+        .delivery-status.delivered {
+            color: #4fc3f7; /* أزرق فاتح للتسليم */
+        }
+
+        .delivery-status.read {
+            color: #34c759; /* أخضر للمشاهدة */
+        }
+
+        .delivery-status.failed {
+            color: #ff5252; /* أحمر للفشل */
+        }
+
+        /* أيقونات المشاهدة بنمط WhatsApp */
+        .whatsapp-check {
+            position: relative;
+            display: inline-block;
+            width: 16px;
+            height: 12px;
+        }
+
+        .whatsapp-check::before,
+        .whatsapp-check::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 3px;
+            border-bottom: 2px solid currentColor;
+            border-right: 2px solid currentColor;
+            transform: rotate(45deg);
+        }
+
+        .whatsapp-check::before {
+            left: 0;
+            top: 2px;
+        }
+
+        .whatsapp-check.double::after {
+            left: 3px;
+            top: 2px;
+        }
+
+        /* Container للرسائل مثل WhatsApp */
+        #chat-messages {
+            background: linear-gradient(to bottom, 
+                #e3ddd7 0%, 
+                #d9d5c7 100%);
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0);
+            background-size: 20px 20px;
+            padding: 15px 10px;
+            overflow-y: auto;
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+        }
+
+        body.dark-mode #chat-messages {
+            background: linear-gradient(to bottom, 
+                #1a1a1a 0%, 
+                #0d1117 100%);
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+        }
+
+        /* تحسين الرؤية في الوضع الليلي */
+        body.dark-mode .chat-message.sent .chat-message-content {
+            background: #005c4b;
+            color: #ffffff;
+        }
+
+        body.dark-mode .chat-message.sent .chat-message-content::after {
+            border-left-color: #005c4b;
+        }
+
+        body.dark-mode .chat-message.received .chat-message-content {
+            background: #262d31;
+            color: #e9edef;
+        }
+
+        body.dark-mode .chat-message.received .chat-message-content::after {
+            border-right-color: #262d31;
+        }
+
+        /* تأثير التمرير السلس */
+        #chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* تأثير hover للرسائل */
+        .chat-message:hover {
+            transform: translateY(-1px);
+            transition: transform 0.2s ease;
+        }
+
+        .chat-message.sent:hover .chat-message-content {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .chat-message.received:hover .chat-message-content {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* مساحة إضافية بين مجموعات الرسائل */
+        .chat-message + .chat-message {
+            margin-top: 2px;
+        }
+
+        .chat-message.sent + .chat-message.received,
+        .chat-message.received + .chat-message.sent {
+            margin-top: 12px;
+        }
+
+        /* تجميع الرسائل المتتالية من نفس المرسل */
+        .chat-message.sent + .chat-message.sent .chat-message-content::after,
+        .chat-message.received + .chat-message.received .chat-message-content::after {
+            display: none;
+        }
+
+        .chat-message.sent + .chat-message.sent .chat-message-content {
+            border-bottom-right-radius: 18px;
+        }
+
+        .chat-message.received + .chat-message.received .chat-message-content {
+            border-bottom-left-radius: 18px;
+        }
+
+        .chat-message.sent:not(:has(+ .chat-message.sent)) .chat-message-content::after,
+        .chat-message.received:not(:has(+ .chat-message.received)) .chat-message-content::after {
+            display: block;
+        }
+
+        .chat-message.sent:not(:has(+ .chat-message.sent)) .chat-message-content {
+            border-bottom-right-radius: 6px;
+        }
+
+        .chat-message.received:not(:has(+ .chat-message.received)) .chat-message-content {
+            border-bottom-left-radius: 6px;
+        }
+
+        /* تأثيرات تفاعلية محسنة */
+        .chat-message-content {
+            transition: all 0.2s ease;
+        }
+
+        .chat-message.sent .chat-message-content:hover {
+            background: #d1f2cb;
+        }
+
+        .chat-message.received .chat-message-content:hover {
+            background: #f8f9fa;
+        }
+
+        /* إصلاح التداخل */
+        .chat-message::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        /* تحسينات إضافية للوضع الليلي */
+        body.dark-mode .chat-message.sent .chat-message-content {
+            background: #005c4b; /* أخضر داكن للوضع الليلي */
+            color: #ffffff;
+        }
+
+        body.dark-mode .chat-message.sent .chat-message-content::after {
+            border-left-color: #005c4b;
+        }
+
+        body.dark-mode .chat-message.received .chat-message-content {
+            background: #262d31;
+            color: #e9edef;
+        }
+
+        body.dark-mode .chat-message.received .chat-message-content::after {
+            border-right-color: #262d31;
+        }
+
+        /* تحسين شريط إدخال الرسائل */
+        .chat-input-container {
+            background: var(--white);
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-input-container input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 10px 18px;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.4;
+            height: 44px;
+            font-family: inherit;
+        }
+
+        .chat-input-container input:focus {
+            border-color: #00a884;
+            box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.1);
+        }
+
+        .chat-input-container button {
+            background: #00a884;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .chat-input-container button:hover {
+            background: #008f72;
+            transform: scale(1.05);
+        }
+
+        .chat-input-container button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* مؤشر الكتابة */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background: var(--gray-light);
+            border-radius: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .typing-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots .dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* تحسين مظهر الرسائل مع مؤشرات المشاهدة */
+        .chat-message-content {
+            position: relative;
+        }
+
+        .chat-message-time {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+        }
+
+        .delivery-status {
+            color: var(--gray);
+        }
+
+        .delivery-status.delivered {
+            color: var(--primary);
+        }
+
+        .delivery-status.read {
+            color: var(--success);
+        }
+
+        .delivery-status.sending {
+            color: var(--gray);
+            animation: pulse 1.5s infinite;
+        }
+
+        .delivery-status.failed {
+            color: var(--danger);
+        }
+
+        /* بادجة الإشعارات الجديدة */
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            min-width: 16px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        /* تحسين الوضع الليلي لمؤشرات المشاهدة */
+        body.dark-mode .typing-indicator {
+            background: var(--gray-light);
+            color: var(--light);
+        }
+
+        body.dark-mode .read-status {
+            opacity: 0.8;
+        }
+
+        body.dark-mode .delivery-status {
+            color: var(--gray);
+        }
     </style>
 </head>
 
 <body>
+    <!-- ملف الصوت للإشعارات -->
+    <audio id="notification-sound" preload="auto">
+        <source src="assets/رسائل-الايفون.mp3" type="audio/mpeg">
+        <source src="assets/رسائل-الايفون.mp3" type="audio/mp3">
+    </audio>
+
     <div class="app-container">
         <!-- Login Screen -->
         <div id="login-screen" class="login-screen">
@@ -1149,6 +1767,61 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // ========== نظام الإشعارات الصوتية ==========
+        
+        function playNotificationSound() {
+            try {
+                const audio = document.getElementById('notification-sound');
+                if (audio) {
+                    // إعادة تعيين موقع التشغيل للبداية
+                    audio.currentTime = 0;
+                    
+                    // محاولة تشغيل الصوت
+                    const playPromise = audio.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('🔊 تم تشغيل صوت الإشعار بنجاح');
+                            })
+                            .catch(error => {
+                                console.warn('⚠️ فشل في تشغيل صوت الإشعار:', error);
+                                // محاولة بديلة
+                                setTimeout(() => {
+                                    try {
+                                        audio.play();
+                                    } catch (e) {
+                                        console.warn('⚠️ فشل في المحاولة البديلة لتشغيل الصوت');
+                                    }
+                                }, 100);
+                            });
+                    }
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تشغيل صوت الإشعار:', error);
+            }
+        }
+        
+        function enableAudioInteraction() {
+            // تفعيل الصوت عند أول تفاعل من المستخدم
+            const audio = document.getElementById('notification-sound');
+            if (audio) {
+                audio.volume = 0.7; // تقليل الصوت قليلاً
+                
+                // محاولة تشغيل صامت لتفعيل الصوت
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(() => {
+                    // تجاهل الأخطاء في التشغيل الصامت
+                });
+            }
+        }
+        
+        // تفعيل الصوت عند أول نقرة
+        document.addEventListener('click', enableAudioInteraction, { once: true });
+        document.addEventListener('touchstart', enableAudioInteraction, { once: true });
+
         let currentLawyer = null;
         let allCases = [];
         let filteredCases = [];
@@ -1156,6 +1829,8 @@
         let isConnected = false;
         let notifications = [];
         let unreadCount = 0;
+        let chatMessages = [];
+        let previousMessageCount = 0; // لتتبع الرسائل السابقة
 
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
@@ -2331,11 +3006,18 @@
             }
         }
 
-        function showCaseDetails(caseId) {
+        async function showCaseDetails(caseId) {
             let caseItem = allCases.find(c => (c.id && c.id.toString() === caseId.toString()) || (c.firebaseId && c.firebaseId.toString() === caseId.toString()) || c.caseNumber === caseId);
             if (!caseItem) return;
 
-            document.getElementById('case-details-title').textContent = `الدعوى رقم ${caseItem.caseNumber}`;
+            // تحميل الاستقطاعات الخاصة بهذه الدعوى
+            const caseDeductions = await loadCaseDeductions(caseItem.caseNumber);
+            const totalDeductions = caseDeductions.reduce((sum, d) => sum + (d.amount || 0), 0);
+            const remainingAmount = (caseItem.amount || 0) - totalDeductions;
+            const isCompleted = remainingAmount <= 0;
+            const completionPercentage = Math.min(100, Math.round((totalDeductions / (caseItem.amount || 1)) * 100));
+
+            document.getElementById('case-details-title').textContent = `الدعوى رقم ${caseItem.caseNumber} ${isCompleted ? '✅' : ''}`;
             document.getElementById('case-details-body').innerHTML = `
                 <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
                     <strong>الموضوع:</strong> ${caseItem.subject}
@@ -2343,6 +3025,7 @@
                 <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
                     <strong>الحالة:</strong> 
                     <span class="case-status status-${caseItem.status.replace(/\s+/g, '-')}" style="margin-right: 0.5rem;">${caseItem.status}</span>
+                    ${isCompleted ? '<span class="case-status" style="background: var(--success); color: white; margin-right: 0.5rem;">مكتمل الدفع</span>' : ''}
                 </div>
                 ${caseItem.stage ? `
                 <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
@@ -2357,19 +3040,109 @@
                     <strong>المدعى عليه:</strong> ${caseItem.defendantName}
                 </div>
                 <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
-                    <strong>المبلغ:</strong> ${formatNumber(caseItem.amount)} د.ع
+                    <strong>المبلغ الإجمالي:</strong> ${formatNumber(caseItem.amount)} د.ع
                 </div>
                 <div style="padding: 0.9rem 0; border-bottom: 1px solid var(--border);">
                     <strong>المحكمة:</strong> ${caseItem.courtName}
                 </div>
-                ${caseItem.deductions > 0 ? `
-                <div style="padding: 0.9rem 0;">
-                    <strong>إجمالي الاستقطاعات:</strong> ${formatNumber(caseItem.deductions)} د.ع
+                
+                <!-- قسم الاستقطاعات المحسن -->
+                <div class="deductions-table-container">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary);">
+                        <i class="fas fa-coins"></i>
+                        تفاصيل الاستقطاعات
+                    </h4>
+                    
+                    <!-- شريط التقدم -->
+                    <div class="deduction-progress ${isCompleted ? 'case-completed' : ''}">
+                        <div class="progress-text">
+                            تم استقطاع: ${formatNumber(totalDeductions)} د.ع من ${formatNumber(caseItem.amount)} د.ع
+                            <span style="float: left; font-weight: 700; color: ${isCompleted ? 'var(--success)' : 'var(--primary)'};">
+                                ${completionPercentage}%
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${completionPercentage}%;"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">
+                            ${isCompleted ? 
+                                '<span style="color: var(--success); font-weight: 700;">🎉 تم اكتمال الدفع بالكامل!</span>' : 
+                                `المبلغ المتبقي: <span style="color: var(--warning); font-weight: 700;">${formatNumber(remainingAmount)} د.ع</span>`
+                            }
+                        </div>
+                    </div>
+                    
+                    ${caseDeductions.length > 0 ? `
+                    <table class="deductions-table">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>المبلغ</th>
+                                <th>المصدر</th>
+                                <th>الملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${caseDeductions.map(deduction => `
+                                <tr>
+                                    <td>${formatDate(deduction.date)}</td>
+                                    <td class="deduction-amount">${formatNumber(deduction.amount)} د.ع</td>
+                                    <td>${deduction.source}</td>
+                                    <td>${deduction.notes || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ` : `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray);">
+                        <i class="fas fa-coins" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                        <p>لا توجد استقطاعات بعد</p>
+                    </div>
+                    `}
+                    
+                    <div style="margin-top: 1rem; text-align: center;">
+                        <button class="btn" onclick="showAddDeductionModal('${caseId}')" style="max-width: 200px;">
+                            <i class="fas fa-plus"></i>
+                            إضافة استقطاع
+                        </button>
+                    </div>
                 </div>
-                ` : ''}
             `;
 
             document.getElementById('case-details-modal').classList.add('active');
+        }
+
+        // تحميل الاستقطاعات الخاصة بدعوى معينة
+        async function loadCaseDeductions(caseNumber) {
+            console.log('🔄 تحميل استقطاعات الدعوى:', caseNumber);
+            
+            try {
+                const deductionsSnapshot = await database.ref('data/deductions').once('value');
+                const deductions = deductionsSnapshot.val();
+                
+                if (!deductions) {
+                    console.log('📭 لا توجد استقطاعات في قاعدة البيانات');
+                    return [];
+                }
+                
+                let caseDeductions = [];
+                
+                if (Array.isArray(deductions)) {
+                    caseDeductions = deductions.filter(d => d && d.caseNumber === caseNumber);
+                } else {
+                    caseDeductions = Object.values(deductions).filter(d => d && d.caseNumber === caseNumber);
+                }
+                
+                // ترتيب الاستقطاعات حسب التاريخ
+                caseDeductions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                console.log('📊 تم العثور على', caseDeductions.length, 'استقطاع للدعوى', caseNumber);
+                return caseDeductions;
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحميل الاستقطاعات:', error);
+                return [];
+            }
         }
 
         function showUpdateStatusModal(caseId) {
@@ -2546,6 +3319,24 @@
                 return;
             }
 
+            // فحص إذا كانت الدعوى مكتملة الدفع
+            const currentDeductions = selectedCase.deductions || 0;
+            const remainingAmount = selectedCase.amount - currentDeductions;
+            
+            if (remainingAmount <= 0) {
+                alert('🎉 هذه الدعوى مكتملة الدفع بالفعل!\nلا يمكن إضافة استقطاعات أخرى.');
+                return;
+            }
+            
+            if (amount > remainingAmount) {
+                if (!confirm(`المبلغ المدخل (${formatNumber(amount)} د.ع) أكبر من المبلغ المتبقي (${formatNumber(remainingAmount)} د.ع).\n\nهل تريد تعديل المبلغ إلى ${formatNumber(remainingAmount)} د.ع لإكمال الدفع؟`)) {
+                    return;
+                }
+                // تعديل المبلغ للمبلغ المتبقي
+                document.getElementById('deduction-amount').value = remainingAmount;
+                return; // إعادة تشغيل الدالة بالمبلغ المعدل
+            }
+
             try {
                 const deductionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
                 const actualCaseId = selectedCase.firebaseId || selectedCase.id || selectedCase.caseNumber;
@@ -2570,18 +3361,29 @@
                 await database.ref(`deductions/${deductionId}`).set(deductionData);
 
                 const updatedDeductions = (selectedCase.deductions || 0) + amount;
+                const isCompleted = updatedDeductions >= selectedCase.amount;
+                
                 const updateData = {
                     deductions: updatedDeductions,
                     lastModified: new Date().toISOString()
                 };
 
+                // إذا اكتمل الدفع، تحديث حالة الدعوى
+                if (isCompleted) {
+                    updateData.status = 'مكتملة الدفع';
+                    updateData.completedDate = new Date().toISOString().split('T')[0];
+                }
+
                 if (!selectedCase.timeline) selectedCase.timeline = [];
+                
+                // إضافة سجل الاستقطاع
                 selectedCase.timeline.push({
                     date: date,
-                    title: 'استقطاع جديد',
-                    desc: `تم استقطاع ${formatNumber(amount)} د.ع من ${source}${notes ? ` - ${notes}` : ''}`,
-                    type: 'green'
+                    title: isCompleted ? '🎉 استقطاع إكمال الدفع' : 'استقطاع جديد',
+                    desc: `تم استقطاع ${formatNumber(amount)} د.ع من ${source}${notes ? ` - ${notes}` : ''}${isCompleted ? '\n✅ تم إكمال دفع الدعوى بالكامل!' : ''}`,
+                    type: isCompleted ? 'success' : 'green'
                 });
+                
                 updateData.timeline = selectedCase.timeline;
 
                 try {
@@ -2601,17 +3403,31 @@
                 selectedCase.deductions = updatedDeductions;
                 selectedCase.lastModified = new Date().toISOString();
                 selectedCase.timeline = updateData.timeline;
+                
+                // تحديث الحالة المحلية إذا اكتمل الدفع
+                if (isCompleted) {
+                    selectedCase.status = 'مكتملة الدفع';
+                    selectedCase.completedDate = new Date().toISOString().split('T')[0];
+                }
 
                 await database.ref('system/lastUpdate').set({
                     timestamp: new Date().toISOString(),
                     source: 'mobile_app',
-                    action: 'deduction_added',
+                    action: isCompleted ? 'case_completed' : 'deduction_added',
                     lawyerName: currentLawyer.name
                 });
 
                 renderCases();
                 closeModal('add-deduction-modal');
-                alert(`تم إضافة الاستقطاع بنجاح - ${formatNumber(amount)} د.ع`);
+                
+                // عرض رسالة مناسبة حسب حالة الإكمال
+                if (isCompleted) {
+                    alert(`🎉 تم إكمال دفع الدعوى بالكامل!\n\n📊 تفاصيل الإكمال:\n• آخر استقطاع: ${formatNumber(amount)} د.ع\n• إجمالي الاستقطاعات: ${formatNumber(updatedDeductions)} د.ع\n• مبلغ الدعوى: ${formatNumber(selectedCase.amount)} د.ع\n• تاريخ الإكمال: ${new Date().toLocaleDateString('ar-SA')}`);
+                } else {
+                    const remaining = selectedCase.amount - updatedDeductions;
+                    const percentage = ((updatedDeductions / selectedCase.amount) * 100).toFixed(1);
+                    alert(`✅ تم إضافة الاستقطاع بنجاح!\n\n📊 حالة الدعوى:\n• الاستقطاع الحالي: ${formatNumber(amount)} د.ع\n• إجمالي الاستقطاعات: ${formatNumber(updatedDeductions)} د.ع\n• المبلغ المتبقي: ${formatNumber(remaining)} د.ع\n• نسبة الإكمال: ${percentage}%`);
+                }
                 
                 setTimeout(() => {
                     loadLawyerCases();
@@ -2655,7 +3471,6 @@
         });
 
         // Chat Functions
-        let chatMessages = [];
         let isChatOpen = false;
 
         // Save and load chat messages locally
@@ -2671,6 +3486,7 @@
                 const saved = localStorage.getItem(`chatMessages_${currentLawyer.id}`);
                 if (saved) {
                     chatMessages = JSON.parse(saved);
+                    previousMessageCount = chatMessages.length; // تهيئة العداد
                     console.log('📂 تم استرداد', chatMessages.length, 'رسالة محلياً');
                     renderChatMessages();
                     updateChatBadge();
@@ -2687,11 +3503,16 @@
             isChatOpen = !isChatOpen;
             
             if (isChatOpen) {
+                console.log('💬 فتح نافذة الدردشة');
                 chatPanel.classList.add('show');
                 loadChatMessages();
-                // Mark messages as read
-                markChatMessagesAsRead();
+                
+                // تأخير قصير قبل تعيين الرسائل كمقروءة للتأكد من تحميلها
+                setTimeout(() => {
+                    markChatMessagesAsRead();
+                }, 500);
             } else {
+                console.log('💬 إغلاق نافذة الدردشة');
                 chatPanel.classList.remove('show');
             }
         }
@@ -2703,81 +3524,235 @@
 
             // Load cached messages first for better UX
             loadChatMessagesLocally();
+            
+            // إعداد مراقب حالة المشاهدة
+            setupReadStatusListenerForLawyer();
 
-            // Listen for messages from admin in lawyer's directory
-            database.ref(`chat/${currentLawyer.id}/messages`).on('value', (snapshot) => {
+            // إعداد مستمعين شاملين للرسائل من جميع المصادر الممكنة
+            
+            // 1. مراقبة الرسائل في دليل المحامي
+            database.ref(`chat/${currentLawyer.id}`).on('value', (snapshot) => {
+                console.log('🔍 فحص دليل المحامي:', currentLawyer.id);
                 if (snapshot.exists()) {
-                    const messages = Object.values(snapshot.val());
-                    const lawyerMessages = messages.filter(msg => msg.from === 'admin' && msg.to === currentLawyer.id);
+                    const data = snapshot.val();
+                    console.log('📨 بيانات دليل المحامي:', data);
                     
-                    // Listen for messages from admin in admin directory
-                    database.ref('chat/admin/messages').orderByChild('to').equalTo(currentLawyer.id).on('value', (adminSnapshot) => {
-                        const adminMessages = adminSnapshot.exists() ? Object.values(adminSnapshot.val()) : [];
-                        
-                        // Listen for lawyer's own sent messages
-                        database.ref('chat/admin/messages').orderByChild('from').equalTo(currentLawyer.id).on('value', (sentSnapshot) => {
-                            const sentMessages = sentSnapshot.exists() ? Object.values(sentSnapshot.val()) : [];
-                            
-                            // Combine all messages
-                            chatMessages = [...lawyerMessages, ...adminMessages, ...sentMessages]
-                                .filter((msg, index, self) => 
-                                    index === self.findIndex(m => m.id === msg.id)
-                                ) // Remove duplicates
-                                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                            
-                            renderChatMessages();
-                            updateChatBadge();
-                            saveChatMessagesLocally(); // Save after loading from Firebase
+                    // معالجة الرسائل في messages
+                    if (data.messages) {
+                        Object.values(data.messages).forEach(message => {
+                            if (message && !chatMessages.find(m => m.id === message.id)) {
+                                console.log('📩 رسالة جديدة من دليل المحامي:', message);
+                                chatMessages.push(message);
+                            }
                         });
+                    }
+                    
+                    // معالجة الرسائل المباشرة (بدون messages)
+                    Object.entries(data).forEach(([key, value]) => {
+                        if (key !== 'messages' && value && typeof value === 'object' && value.message) {
+                            if (!chatMessages.find(m => m.id === value.id || m.id === key)) {
+                                console.log('📩 رسالة مباشرة من دليل المحامي:', value);
+                                chatMessages.push({ ...value, id: value.id || key });
+                            }
+                        }
                     });
-                } else {
-                    // No messages in lawyer directory, check admin directory only
-                    database.ref('chat/admin/messages').orderByChild('to').equalTo(currentLawyer.id).on('value', (adminSnapshot) => {
-                        const adminMessages = adminSnapshot.exists() ? Object.values(adminSnapshot.val()) : [];
-                        
-                        // Also get sent messages
-                        database.ref('chat/admin/messages').orderByChild('from').equalTo(currentLawyer.id).on('value', (sentSnapshot) => {
-                            const sentMessages = sentSnapshot.exists() ? Object.values(sentSnapshot.val()) : [];
-                            
-                            chatMessages = [...adminMessages, ...sentMessages]
-                                .filter((msg, index, self) => 
-                                    index === self.findIndex(m => m.id === msg.id)
-                                ) // Remove duplicates  
-                                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                            
-                            renderChatMessages();
-                            updateChatBadge();
-                            saveChatMessagesLocally(); // Save after loading from Firebase
-                        });
-                    });
+                    
+                    // فرز وعرض الرسائل
+                    chatMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                    renderChatMessages();
+                    updateChatBadge();
+                    saveChatMessagesLocally();
                 }
             });
+
+            // 2. مراقبة الرسائل في دليل الإدارة
+            database.ref('chat/admin').on('value', (snapshot) => {
+                console.log('🔍 فحص دليل الإدارة');
+                if (snapshot.exists()) {
+                    const adminData = snapshot.val();
+                    console.log('📨 بيانات دليل الإدارة:', adminData);
+                    
+                    // معالجة الرسائل في messages
+                    if (adminData.messages) {
+                        Object.values(adminData.messages).forEach(message => {
+                            // الرسائل المرسلة للمحامي الحالي أو من المحامي الحالي
+                            if ((message.to === currentLawyer.id || message.from === currentLawyer.id || 
+                                 message.to === currentLawyer.name || message.from === currentLawyer.name) && 
+                                !chatMessages.find(m => m.id === message.id)) {
+                                console.log('📩 رسالة جديدة من دليل الإدارة:', message);
+                                chatMessages.push(message);
+                            }
+                        });
+                    }
+                    
+                    // معالجة الرسائل المباشرة (بدون messages)
+                    Object.entries(adminData).forEach(([key, value]) => {
+                        if (key !== 'messages' && value && typeof value === 'object' && value.message) {
+                            if ((value.to === currentLawyer.id || value.from === currentLawyer.id ||
+                                 value.to === currentLawyer.name || value.from === currentLawyer.name) && 
+                                !chatMessages.find(m => m.id === value.id || m.id === key)) {
+                                console.log('📩 رسالة مباشرة من الإدارة:', value);
+                                chatMessages.push({ ...value, id: value.id || key });
+                            }
+                        }
+                    });
+                    
+                    // فرز وعرض الرسائل
+                    const previousCount = previousMessageCount;
+                    chatMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                    renderChatMessages();
+                    
+                    // تشغيل صوت الإشعار إذا كانت هناك رسائل جديدة من الإدارة
+                    if (chatMessages.length > previousCount) {
+                        const newMessages = chatMessages.slice(previousCount);
+                        const hasNewAdminMessage = newMessages.some(msg => 
+                            msg.from === 'admin' || (msg.from !== currentLawyer.id && msg.from !== currentLawyer.name)
+                        );
+                        
+                        if (hasNewAdminMessage && previousCount > 0) { // تجنب التشغيل عند التحميل الأول
+                            console.log('🔊 رسالة جديدة من الإدارة - تشغيل الصوت');
+                            playNotificationSound();
+                        }
+                        
+                        previousMessageCount = chatMessages.length;
+                    }
+                    
+                    updateChatBadge();
+                    saveChatMessagesLocally();
+                }
+            });
+
+            // 3. مراقبة أي رسائل جديدة في الجذر
+            database.ref('chat').on('child_added', (snapshot) => {
+                const key = snapshot.key;
+                const data = snapshot.val();
+                
+                console.log('🔍 رسالة جديدة في الجذر:', key, data);
+                
+                if (key !== 'admin' && key !== currentLawyer.id && data && data.message) {
+                    if ((data.to === currentLawyer.id || data.from === currentLawyer.id ||
+                         data.to === currentLawyer.name || data.from === currentLawyer.name) && 
+                        !chatMessages.find(m => m.id === data.id || m.id === key)) {
+                        console.log('📩 رسالة مباشرة جديدة:', data);
+                        chatMessages.push({ ...data, id: data.id || key });
+                        chatMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                        renderChatMessages();
+                        updateChatBadge();
+                        saveChatMessagesLocally();
+                        
+                        // إظهار إشعار للرسالة الجديدة
+                        if (data.from === 'admin' || data.from !== currentLawyer.id) {
+                            showNewMessageNotification(data);
+                        }
+                    }
+                }
+            });
+        }
+
+        // دالة إظهار إشعار للرسائل الجديدة
+        function showNewMessageNotification(messageData) {
+            console.log('🔔 إشعار رسالة جديدة:', messageData);
+            
+            // إنشاء إشعار في نظام الإشعارات
+            const notification = {
+                id: 'chat_' + Date.now(),
+                type: 'new-message',
+                title: '💬 رسالة جديدة',
+                description: messageData.message.length > 50 ? 
+                    messageData.message.substring(0, 50) + '...' : 
+                    messageData.message,
+                timestamp: new Date().toISOString(),
+                read: false,
+                messageId: messageData.id
+            };
+            
+            addNotification(notification);
+            
+            // إشعار المتصفح إذا كان مفعلاً
+            showBrowserNotification(notification);
+            
+            // تحديث شارة الدردشة
+            updateChatBadge();
+            
+            // اهتزاز خفيف للهاتف (إذا كان متاحاً)
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
         }
 
         function renderChatMessages() {
             const container = document.getElementById('chat-messages');
             if (!container) return;
 
+            console.log('🎨 عرض', chatMessages.length, 'رسالة في الدردشة');
+
             if (chatMessages.length === 0) {
                 container.innerHTML = `
                     <div class="no-notifications">
                         <i class="fas fa-comment-dots"></i>
                         <p>لا توجد رسائل</p>
-                        <p style="font-size: 0.8rem; color: var(--gray);">ابدأ المحادثة أدناه</p>
+                        <p style="font-size: 0.8rem; color: var(--gray);">ستظهر الرسائل من النظام الرئيسي هنا</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = chatMessages.map(message => {
-                const isFromAdmin = message.from === 'admin';
+            container.innerHTML = chatMessages.map((message, index) => {
+                const isFromAdmin = message.from === 'admin' || (message.from !== currentLawyer.id && message.from !== currentLawyer.name);
                 const messageClass = isFromAdmin ? 'received' : 'sent';
                 
+                // تحديد حالة التسليم والمشاهدة
+                let statusIcon = '';
+                let statusText = '';
+                let statusClass = '';
+                
+                if (!isFromAdmin) {
+                    // للرسائل المرسلة من المحامي
+                    if (message.readByAdmin) {
+                        statusIcon = '<span class="whatsapp-check double delivery-status read" title="تمت المشاهدة"></span>';
+                        statusText = 'تمت المشاهدة';
+                        statusClass = 'read';
+                    } else if (message.delivered) {
+                        statusIcon = '<span class="whatsapp-check delivery-status delivered" title="تم التسليم"></span>';
+                        statusText = 'تم التسليم';
+                        statusClass = 'delivered';
+                    } else if (message.deliveryStatus === 'failed') {
+                        statusIcon = '<i class="fas fa-exclamation-triangle delivery-status failed"></i>';
+                        statusText = 'فشل الإرسال';
+                        statusClass = 'failed';
+                    } else {
+                        statusIcon = '<i class="fas fa-clock delivery-status sending"></i>';
+                        statusText = 'جاري الإرسال';
+                        statusClass = 'sending';
+                    }
+                }
+                
+                console.log(`📨 رسالة ${index + 1}:`, {
+                    من: message.from,
+                    إلى: message.to,
+                    المحتوى: message.message.substring(0, 30),
+                    الوقت: message.timestamp,
+                    مقروءة: message.read,
+                    نوع: messageClass,
+                    حالة: statusText
+                });
+                
                 return `
-                    <div class="chat-message ${messageClass}">
+                    <div class="chat-message ${messageClass}" 
+                         data-message-id="${message.id}"
+                         ontouchstart="handleMessageTouchStart(event, '${message.id}')"
+                         ontouchend="handleMessageTouchEnd(event, '${message.id}')"
+                         oncontextmenu="showMessageOptions(event, '${message.id}'); return false;">
                         <div class="chat-message-content">
                             <div class="chat-message-text">${message.message}</div>
-                            <div class="chat-message-time">${formatDateTime(message.timestamp)}</div>
+                            <div class="chat-message-time">
+                                <span>${formatDateTime(message.timestamp)}</span>
+                                ${!isFromAdmin && statusIcon ? `
+                                    <div class="delivery-status ${statusClass}" title="${statusText}">
+                                        ${statusIcon}
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -2786,7 +3761,182 @@
             // Auto-scroll to bottom
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
+                // تحديث حالة المشاهدة عند عرض الرسائل
+                markChatMessagesAsRead();
             }, 100);
+        }
+
+        // ========== نظام تتبع المشاهدة للمحامي ==========
+        
+        async function markChatMessagesAsRead() {
+            if (!database || !currentLawyer) return;
+            
+            try {
+                console.log('👁️ تحديث حالة المشاهدة للمحامي:', currentLawyer.name);
+                
+                // تحديث حالة قراءة المحامي للرسائل
+                const readStatusUpdate = {
+                    lawyerLastRead: Date.now(),
+                    lawyerReadBy: currentLawyer.id,
+                    lastReadUpdate: new Date().toISOString()
+                };
+                
+                // تحديث في Firebase
+                await database.ref(`chat/${currentLawyer.id}/readStatus/admin`).update(readStatusUpdate);
+                await database.ref(`chat/admin/readStatus/${currentLawyer.id}`).update(readStatusUpdate);
+                
+                // تحديث الرسائل المحلية
+                chatMessages.forEach(message => {
+                    const isFromAdmin = message.from === 'admin' || (message.from !== currentLawyer.id && message.from !== currentLawyer.name);
+                    if (isFromAdmin) {
+                        message.readByLawyer = true;
+                        message.readTimestamp = Date.now();
+                    }
+                });
+                
+                // حفظ التحديث محلياً
+                saveChatMessagesLocally();
+                
+                // تحديث مؤشرات المشاهدة في الواجهة
+                updateReadStatusInChatUI();
+                
+                console.log('✅ تم تحديث حالة المشاهدة بنجاح');
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحديث حالة المشاهدة:', error);
+            }
+        }
+        
+        function updateReadStatusInChatUI() {
+            // تحديث مؤشرات المشاهدة في الرسائل المرسلة
+            const sentMessages = document.querySelectorAll('.chat-message.sent');
+            sentMessages.forEach(messageEl => {
+                const messageId = messageEl.getAttribute('data-message-id');
+                const message = chatMessages.find(m => m.id === messageId);
+                
+                if (message && message.readByAdmin) {
+                    addReadIndicatorToChatMessage(messageEl);
+                }
+            });
+            
+            // إزالة بادجة الإشعارات
+            const chatBadge = document.querySelector('.chat-badge');
+            if (chatBadge) {
+                chatBadge.style.display = 'none';
+            }
+        }
+        
+        function addReadIndicatorToChatMessage(messageElement) {
+            if (messageElement.querySelector('.read-status')) return;
+            
+            const readStatus = document.createElement('span');
+            readStatus.className = 'read-status';
+            readStatus.innerHTML = '<span class="whatsapp-check double delivery-status read" title="تمت المشاهدة"></span>';
+            
+            const messageTime = messageElement.querySelector('.chat-message-time');
+            if (messageTime) {
+                messageTime.appendChild(readStatus);
+            }
+        }
+        
+        // مراقبة حالة المشاهدة من الإدارة
+        function setupReadStatusListenerForLawyer() {
+            if (!database || !currentLawyer) return;
+            
+            console.log('👁️ إعداد مراقب حالة المشاهدة للمحامي');
+            
+            // مراقبة تحديثات حالة القراءة من الإدارة
+            database.ref(`chat/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const readStatus = snapshot.val();
+                    if (readStatus.adminLastRead) {
+                        console.log('👁️ الإدارة شاهدت الرسائل في:', new Date(readStatus.adminLastRead));
+                        updateAdminReadStatus(readStatus.adminLastRead);
+                    }
+                }
+            });
+            
+            // مراقبة التحديثات في دليل الإدارة أيضاً
+            database.ref(`chat/admin/readStatus/${currentLawyer.id}`).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const readStatus = snapshot.val();
+                    if (readStatus.adminLastRead) {
+                        console.log('👁️ الإدارة شاهدت الرسائل (admin path) في:', new Date(readStatus.adminLastRead));
+                        updateAdminReadStatus(readStatus.adminLastRead);
+                    }
+                }
+            });
+        }
+        
+        function updateAdminReadStatus(readTimestamp) {
+            // تحديث حالة مشاهدة الإدارة للرسائل
+            chatMessages.forEach(message => {
+                const isFromLawyer = message.from === currentLawyer.id || message.from === currentLawyer.name;
+                if (isFromLawyer && message.timestamp <= readTimestamp) {
+                    message.readByAdmin = true;
+                    message.adminReadTimestamp = readTimestamp;
+                }
+            });
+            
+            // تحديث الواجهة
+            updateReadIndicatorsInChatConversation();
+            
+            // حفظ التحديث
+            saveChatMessagesLocally();
+        }
+        
+        function updateReadIndicatorsInChatConversation() {
+            const sentMessages = document.querySelectorAll('.chat-message.sent');
+            
+            sentMessages.forEach(messageEl => {
+                const messageId = messageEl.getAttribute('data-message-id');
+                const message = chatMessages.find(m => m.id === messageId);
+                
+                if (message && message.readByAdmin) {
+                    addReadIndicatorToChatMessage(messageEl);
+                } else {
+                    // إزالة مؤشر المشاهدة إذا لم تتم المشاهدة
+                    const readStatus = messageEl.querySelector('.read-status');
+                    if (readStatus) {
+                        readStatus.remove();
+                    }
+                }
+            });
+        }
+        
+        // إضافة مؤشر "يكتب الآن" للإدارة
+        function showAdminTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+            
+            // إزالة مؤشر الكتابة السابق
+            const existingIndicator = container.querySelector('.typing-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = `
+                <div class="typing-content">
+                    <span>الإدارة تكتب</span>
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(typingIndicator);
+            container.scrollTop = container.scrollHeight;
+            
+            // إزالة المؤشر بعد 3 ثوان
+            setTimeout(() => {
+                if (typingIndicator.parentNode) {
+                    typingIndicator.remove();
+                }
+            }, 3000);
         }
 
         function handleChatKeyPress(event) {
@@ -2817,7 +3967,10 @@
                 to: 'admin',
                 lawyerName: currentLawyer.name,
                 lawyerLicense: currentLawyer.license,
-                read: false
+                read: false,
+                delivered: false,
+                readByAdmin: false,
+                deliveryStatus: 'sending'
             };
 
             // Add to local messages immediately for better UX
@@ -2836,15 +3989,42 @@
                 database.ref('chat/admin/messages').push(messageData)
                     .then(() => {
                         console.log('✅ تم إرسال الرسالة إلى admin');
+                        
+                        // تحديث حالة التسليم
+                        messageData.delivered = true;
+                        messageData.deliveryStatus = 'delivered';
+                        messageData.deliveredAt = new Date().toISOString();
+                        
+                        // تحديث الرسالة في القائمة المحلية
+                        const localMessage = chatMessages.find(m => m.id === messageData.id);
+                        if (localMessage) {
+                            Object.assign(localMessage, {
+                                delivered: true,
+                                deliveryStatus: 'delivered',
+                                deliveredAt: messageData.deliveredAt
+                            });
+                        }
+                        
+                        renderChatMessages();
                         showNotification('تم الإرسال', 'تم إرسال الرسالة بنجاح', 'success');
+                        
+                        // تشغيل صوت الإشعار عند نجاح الإرسال
+                        playNotificationSound();
+                        
                         saveChatMessagesLocally(); // Save again after successful send
                     })
                     .catch((error) => {
                         console.error('❌ خطأ في إرسال الرسالة:', error);
-                        showNotification('خطأ', 'فشل في إرسال الرسالة', 'error');
-                        // Remove from local messages on error
-                        chatMessages = chatMessages.filter(msg => msg.id !== messageData.id);
+                        
+                        // تحديث حالة فشل التسليم
+                        messageData.deliveryStatus = 'failed';
+                        const localMessage = chatMessages.find(m => m.id === messageData.id);
+                        if (localMessage) {
+                            localMessage.deliveryStatus = 'failed';
+                        }
+                        
                         renderChatMessages();
+                        showNotification('خطأ', 'فشل في إرسال الرسالة', 'error');
                         saveChatMessagesLocally();
                     });
 
@@ -2868,29 +4048,233 @@
         function markChatMessagesAsRead() {
             if (!currentLawyer) return;
             
+            console.log('📖 تعيين الرسائل كمقروءة');
+            
+            let markedCount = 0;
             chatMessages.forEach(msg => {
-                if (msg.from === 'admin' && msg.to === currentLawyer.id) {
+                if ((msg.from === 'admin' || (msg.from !== currentLawyer.id && msg.from !== currentLawyer.name)) && !msg.read) {
                     msg.read = true;
+                    markedCount++;
                 }
             });
             
+            console.log('📖 تم تعيين', markedCount, 'رسالة كمقروءة');
+            
             updateChatBadge();
+            saveChatMessagesLocally();
         }
 
         function updateChatBadge() {
             const badge = document.getElementById('chat-badge');
             if (!badge || !currentLawyer) return;
 
+            // حساب الرسائل غير المقروءة من الإدارة
             const unreadCount = chatMessages.filter(msg => 
-                msg.from === 'admin' && msg.to === currentLawyer.id && !msg.read
+                (msg.from === 'admin' || (msg.from !== currentLawyer.id && msg.from !== currentLawyer.name)) && 
+                !msg.read
             ).length;
 
+            console.log('💬 تحديث شارة الدردشة - رسائل غير مقروءة:', unreadCount);
+
             if (unreadCount > 0) {
-                badge.textContent = unreadCount;
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
                 badge.classList.remove('hidden');
+                badge.style.display = 'inline-block';
+                
+                // إضافة تأثير بصري للإشعار الجديد
+                badge.style.animation = 'pulse 0.5s ease-in-out';
+                setTimeout(() => {
+                    badge.style.animation = '';
+                }, 500);
             } else {
                 badge.classList.add('hidden');
+                badge.style.display = 'none';
             }
+        }
+
+        // متغيرات اللمس المطول للرسائل
+        let messageTouchStartTime = 0;
+        let messageTouchTimer = null;
+        
+        // معالج بداية اللمس للرسائل
+        function handleMessageTouchStart(event, messageId) {
+            messageTouchStartTime = Date.now();
+            
+            // تنظيف أي timer سابق
+            if (messageTouchTimer) {
+                clearTimeout(messageTouchTimer);
+            }
+            
+            // إعداد timer للمس المطول (800ms)
+            messageTouchTimer = setTimeout(() => {
+                const touchDuration = Date.now() - messageTouchStartTime;
+                if (touchDuration >= 800) {
+                    console.log('👆 لمس مطول للرسالة:', messageId);
+                    navigator.vibrate && navigator.vibrate(50); // اهتزاز خفيف
+                    showMessageOptions(event, messageId);
+                }
+            }, 800);
+        }
+        
+        // معالج انتهاء اللمس للرسائل
+        function handleMessageTouchEnd(event, messageId) {
+            if (messageTouchTimer) {
+                clearTimeout(messageTouchTimer);
+                messageTouchTimer = null;
+            }
+        }
+        
+        // إظهار منيو خيارات الرسالة
+        function showMessageOptions(event, messageId) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // إزالة أي منيو سابق
+            hideMessageOptions();
+            
+            const message = chatMessages.find(msg => msg.id === messageId);
+            if (!message) return;
+            
+            // تحديد موقع المنيو
+            let x, y;
+            if (event.touches && event.touches[0]) {
+                x = event.touches[0].clientX;
+                y = event.touches[0].clientY;
+            } else {
+                x = event.clientX;
+                y = event.clientY;
+            }
+            
+            // إنشاء المنيو
+            const menu = document.createElement('div');
+            menu.id = 'message-options-menu';
+            menu.className = 'message-options-menu show';
+            
+            const isFromAdmin = message.from === 'admin' || (message.from !== currentLawyer.id && message.from !== currentLawyer.name);
+            
+            menu.innerHTML = `
+                <div class="message-option forward" onclick="forwardMessage('${messageId}')">
+                    <i class="fas fa-share"></i>
+                    <span>إعادة توجيه</span>
+                </div>
+                <div class="message-option delete" onclick="deleteMessageLocal('${messageId}')">
+                    <i class="fas fa-trash"></i>
+                    <span>حذف محلي</span>
+                </div>
+                ${isFromAdmin ? '' : `
+                <div class="message-option delete" onclick="deleteMessageBothSides('${messageId}')">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>حذف للطرفين</span>
+                </div>
+                `}
+            `;
+            
+            // وضع المنيو في الموقع المناسب
+            menu.style.position = 'fixed';
+            menu.style.left = Math.min(x, window.innerWidth - 220) + 'px';
+            menu.style.top = Math.min(y, window.innerHeight - 150) + 'px';
+            
+            document.body.appendChild(menu);
+            
+            // إغلاق المنيو عند النقر خارجه
+            setTimeout(() => {
+                document.addEventListener('click', hideMessageOptions, { once: true });
+                document.addEventListener('touchstart', hideMessageOptions, { once: true });
+            }, 100);
+        }
+        
+        // إخفاء منيو خيارات الرسالة
+        function hideMessageOptions() {
+            const menu = document.getElementById('message-options-menu');
+            if (menu) {
+                menu.remove();
+            }
+        }
+        
+        // حذف الرسالة محلياً فقط
+        function deleteMessageLocal(messageId) {
+            if (!confirm('هل تريد حذف هذه الرسالة من جهازك فقط؟')) {
+                hideMessageOptions();
+                return;
+            }
+            
+            console.log('🗑️ حذف رسالة محلياً:', messageId);
+            
+            // حذف من المصفوفة المحلية
+            const messageIndex = chatMessages.findIndex(msg => msg.id === messageId);
+            if (messageIndex >= 0) {
+                chatMessages.splice(messageIndex, 1);
+                renderChatMessages();
+                updateChatBadge();
+                saveChatMessagesLocally();
+                
+                showNotification('تم الحذف', 'تم حذف الرسالة من جهازك', 'success');
+            }
+            
+            hideMessageOptions();
+        }
+        
+        // حذف الرسالة للطرفين
+        function deleteMessageBothSides(messageId) {
+            if (!confirm('هل تريد حذف هذه الرسالة للطرفين؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                hideMessageOptions();
+                return;
+            }
+            
+            console.log('🗑️ حذف رسالة للطرفين:', messageId);
+            
+            // حذف محلياً أولاً
+            const messageIndex = chatMessages.findIndex(msg => msg.id === messageId);
+            if (messageIndex >= 0) {
+                chatMessages.splice(messageIndex, 1);
+                renderChatMessages();
+                updateChatBadge();
+                saveChatMessagesLocally();
+            }
+            
+            // حذف من Firebase
+            if (database && currentLawyer) {
+                const deletePromises = [];
+                
+                // حذف من دليل الإدارة
+                deletePromises.push(database.ref(`chat/admin/${messageId}`).remove());
+                deletePromises.push(database.ref(`chat/admin/messages/${messageId}`).remove());
+                
+                // حذف من دليل المحامي
+                deletePromises.push(database.ref(`chat/${currentLawyer.id}/${messageId}`).remove());
+                deletePromises.push(database.ref(`chat/${currentLawyer.id}/messages/${messageId}`).remove());
+                
+                Promise.all(deletePromises)
+                    .then(() => {
+                        console.log('✅ تم حذف الرسالة من Firebase للطرفين');
+                        showNotification('تم الحذف', 'تم حذف الرسالة للطرفين', 'success');
+                    })
+                    .catch(error => {
+                        console.error('❌ خطأ في حذف الرسالة:', error);
+                        showNotification('خطأ', 'فشل في حذف الرسالة من الخادم', 'error');
+                    });
+            }
+            
+            hideMessageOptions();
+        }
+        
+        // إعادة توجيه الرسالة
+        function forwardMessage(messageId) {
+            const message = chatMessages.find(msg => msg.id === messageId);
+            if (!message) {
+                hideMessageOptions();
+                return;
+            }
+            
+            // ملء حقل الإدخال بالرسالة المعاد توجيهها
+            const messageInput = document.getElementById('chat-input');
+            if (messageInput) {
+                messageInput.value = `📩 رسالة معاد توجيهها: ${message.message}`;
+                messageInput.focus();
+            }
+            
+            hideMessageOptions();
+            showNotification('تم التوجيه', 'تم نسخ الرسالة لإعادة الإرسال', 'info');
         }
 
         function formatDateTime(timestamp) {
@@ -2918,13 +4302,31 @@
                 // Then load from Firebase
                 loadChatMessages();
                 
-                // Set up periodic refresh for real-time updates
-                setInterval(() => {
-                    if (currentLawyer && isConnected && !isChatOpen) {
-                        // Only refresh when chat is not open to avoid interrupting typing
-                        loadChatMessages();
+                // إعداد مراقبة دورية محسنة للرسائل
+                if (window.chatMonitorInterval) {
+                    clearInterval(window.chatMonitorInterval);
+                }
+                
+                window.chatMonitorInterval = setInterval(() => {
+                    if (currentLawyer && isConnected) {
+                        console.log('🔄 مراقبة دورية للرسائل الجديدة');
+                        
+                        // إعادة تحميل الرسائل إذا كانت الدردشة مغلقة
+                        if (!isChatOpen) {
+                            loadChatMessages();
+                        }
+                        
+                        // فحص الاتصال
+                        database.ref('.info/connected').once('value', (snapshot) => {
+                            if (!snapshot.val()) {
+                                console.warn('⚠️ انقطع الاتصال - محاولة إعادة الاتصال');
+                                setTimeout(() => loadChatMessages(), 2000);
+                            }
+                        });
                     }
-                }, 15000); // Refresh every 15 seconds
+                }, 10000); // كل 10 ثوانٍ
+                
+                console.log('✅ تم إعداد المراقبة الدورية للدردشة');
             }
         }
 
@@ -2947,24 +4349,43 @@
             if (isConnected && currentLawyer) {
                 loadLawyerCases();
                 initializeChat(); // Initialize chat when connected
+                
+                // إعداد مراقبة إضافية للرسائل الجديدة
+                setTimeout(() => {
+                    console.log('🔄 إعداد مراقبة إضافية للرسائل...');
+                    loadChatMessages();
+                    updateChatBadge();
+                }, 2000);
             }
         });
 
         setInterval(() => {
             if (currentLawyer && isConnected) {
                 loadLawyerCases();
-                initializeChat(); // Also initialize chat periodically
+                
+                // تحديث دوري للدردشة
+                if (!isChatOpen) {
+                    console.log('🔄 تحديث دوري للدردشة في الخلفية');
+                    loadChatMessages();
+                }
             }
-        }, 5 * 60 * 1000);
+        }, 5 * 60 * 1000); // كل 5 دقائق
 
         // Save chat messages before page unload
         window.addEventListener('beforeunload', () => {
             saveChatMessagesLocally();
+            
+            // تنظيف المراقبة الدورية
+            if (window.chatMonitorInterval) {
+                clearInterval(window.chatMonitorInterval);
+            }
         });
 
         // Save chat messages periodically
         setInterval(() => {
-            saveChatMessagesLocally();
+            if (currentLawyer && chatMessages.length > 0) {
+                saveChatMessagesLocally();
+            }
         }, 30000); // Save every 30 seconds
 
         // Save chat messages when page is about to unload
@@ -2984,169 +4405,6 @@
             } else {
                 alert(`ℹ️ ${title}: ${message}`);
             }
-        }
-
-        // PWA Installation
-        let deferredPrompt;
-        let installButton;
-
-        // Check if PWA is already installed
-        function isPWAInstalled() {
-            return window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone === true;
-        }
-
-        // Show install prompt
-        function showInstallPrompt() {
-            if (deferredPrompt && !isPWAInstalled()) {
-                // Create install button if it doesn't exist
-                if (!installButton) {
-                    installButton = document.createElement('button');
-                    installButton.innerHTML = '<i class="fas fa-download"></i> تثبيت التطبيق';
-                    installButton.className = 'install-btn';
-                    installButton.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background: var(--primary);
-                        color: white;
-                        border: none;
-                        padding: 12px 20px;
-                        border-radius: 25px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-                        cursor: pointer;
-                        z-index: 10000;
-                        transition: all 0.3s ease;
-                        direction: rtl;
-                        font-family: inherit;
-                    `;
-                    
-                    installButton.addEventListener('mouseover', () => {
-                        installButton.style.transform = 'translateY(-2px)';
-                        installButton.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)';
-                    });
-                    
-                    installButton.addEventListener('mouseout', () => {
-                        installButton.style.transform = 'translateY(0)';
-                        installButton.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)';
-                    });
-                    
-                    installButton.addEventListener('click', async () => {
-                        if (deferredPrompt) {
-                            deferredPrompt.prompt();
-                            const result = await deferredPrompt.userChoice;
-                            if (result.outcome === 'accepted') {
-                                console.log('PWA installed successfully');
-                                showNotification('تم التثبيت', 'تم تثبيت التطبيق بنجاح!', 'success');
-                            }
-                            deferredPrompt = null;
-                            installButton.style.display = 'none';
-                        }
-                    });
-                    
-                    document.body.appendChild(installButton);
-                }
-                installButton.style.display = 'block';
-            }
-        }
-
-        // Listen for beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            showInstallPrompt();
-        });
-
-        // Handle app installed event
-        window.addEventListener('appinstalled', (e) => {
-            console.log('PWA was installed');
-            showNotification('تم التثبيت', 'تم تثبيت التطبيق بنجاح على جهازك!', 'success');
-            if (installButton) {
-                installButton.style.display = 'none';
-            }
-        });
-
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('./service-worker.js');
-                    console.log('Service Worker registered successfully:', registration);
-                    
-                    // Check for updates
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                if (confirm('يتوفر تحديث جديد للتطبيق. هل تريد تحديث الصفحة؟')) {
-                                    window.location.reload();
-                                }
-                            }
-                        });
-                    });
-                } catch (error) {
-                    console.error('Service Worker registration failed:', error);
-                }
-            });
-        }
-
-        // Handle online/offline status
-        function updateOnlineStatus() {
-            const statusIndicator = document.createElement('div');
-            statusIndicator.style.cssText = `
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: bold;
-                z-index: 10001;
-                transition: all 0.3s ease;
-            `;
-            
-            if (navigator.onLine) {
-                statusIndicator.innerHTML = '🟢 متصل';
-                statusIndicator.style.background = 'var(--success-light)';
-                statusIndicator.style.color = 'var(--success)';
-            } else {
-                statusIndicator.innerHTML = '🔴 غير متصل';
-                statusIndicator.style.background = '#fee2e2';
-                statusIndicator.style.color = '#dc2626';
-            }
-            
-            // Remove existing status indicator
-            const existing = document.querySelector('.status-indicator');
-            if (existing) existing.remove();
-            
-            statusIndicator.className = 'status-indicator';
-            document.body.appendChild(statusIndicator);
-            
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                if (statusIndicator && statusIndicator.parentNode) {
-                    statusIndicator.style.opacity = '0';
-                    setTimeout(() => {
-                        if (statusIndicator && statusIndicator.parentNode) {
-                            statusIndicator.remove();
-                        }
-                    }, 300);
-                }
-            }, 3000);
-        }
-
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-
-        // Initial status check
-        updateOnlineStatus();
-
-        // Check if app is in standalone mode
-        if (isPWAInstalled()) {
-            console.log('App is running in standalone mode');
-            // Add any standalone-specific functionality here
         }
     </script>
 </body>
