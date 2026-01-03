@@ -1,23 +1,10 @@
 User-agent: *
 Allow: /
-Allow: /manifest.json
-Allow: /service-worker.js
-Allow: /icons/*
 
-# Disallow access to sensitive files and directories
+# Sitemap
+Sitemap: https://your-username.github.io/LEX-CASE-main/sitemap.xml
+
+# Disallow access to sensitive files
 Disallow: /firebase-debug.log
 Disallow: /.env
 Disallow: /node_modules/
-Disallow: /.git/
-Disallow: /.vscode/
-Disallow: /shared-config.js
-
-# Allow specific PWA files
-Allow: /manifest.json
-Allow: /service-worker.js
-
-# Crawl-delay for bots
-Crawl-delay: 1
-
-# Sitemap (update with your actual domain)
-# Sitemap: https://your-domain.com/sitemap.xml

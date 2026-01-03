@@ -2,11 +2,65 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="تطبيق المحامين">
     <meta name="theme-color" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="تطبيق المحامين">
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    <meta name="msapplication-square70x70logo" content="icons/icon-72x72.png">
+    <meta name="msapplication-square150x150logo" content="icons/icon-152x152.png">
+    <meta name="msapplication-wide310x150logo" content="icons/icon-384x384.png">
+    <meta name="msapplication-square310x310logo" content="icons/icon-512x512.png">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="no-referrer-when-downgrade">
+    
+    <!-- منع التخزين المؤقت للصفحة الرئيسية -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- خطوط Google للعربية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    
     <title>تطبيق المحامين</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="icons/icon-72x72.png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="./">
+    <meta property="og:title" content="تطبيق المحامين - مجموعة السيد أسامة القانونية">
+    <meta property="og:description" content="تطبيق إدارة القضايا القانونية للمحامين">
+    <meta property="og:image" content="icons/icon-512x512.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="./">
+    <meta property="twitter:title" content="تطبيق المحامين">
+    <meta property="twitter:description" content="تطبيق إدارة القضايا القانونية للمحامين">
+    <meta property="twitter:image" content="icons/icon-512x512.png">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -14,6 +68,50 @@
     <script src="shared-config.js"></script>
     
     <style>
+        /* ======= UI POLISH: responsive, compact, no overflow ======= */
+        .nowrap { white-space: nowrap; }
+        .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            /* prefer standard if available, with -webkit fallback */
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.2em;
+            max-height: 2.4em;
+        }
+        .compact-card {
+            padding: 0.9rem;
+            border-radius: 0.9rem;
+            box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+            background: rgba(255,255,255,0.98);
+            margin-bottom: 0.9rem;
+        }
+        .compact-table th, .compact-table td {
+            padding: 0.38rem 0.5rem;
+            font-size: 0.86rem;
+        }
+        .compact-rows { gap: 0.45rem; }
+        .admin-lawyer-card { padding: 0.9rem 1rem; }
+        .admin-lawyer-card span { max-width: calc(100% - 48px); }
+        .deductions-table-container { padding: 0.8rem; }
+    /* tighter variant used for admin detail main blocks to avoid large left/right gaps */
+    .tight-block { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+    .tight-card { padding-left: 0.8rem !important; padding-right: 0.8rem !important; }
+    .full-width-table { width: 100%; margin: 0; }
+        /* make tables horizontally scrollable on small screens */
+        .table-responsive { overflow-x: auto; }
+        /* reduce large vertical whitespace */
+        .main-content .section { margin-bottom: 0.8rem; }
+        /* nicer headings */
+        .section h4 { margin: 0 0 0.6rem 0; }
+        @media (max-width: 600px) {
+            .compact-card { padding: 0.7rem; }
+            .deductions-table-container { padding: 0.6rem; }
+            .compact-table th, .compact-table td { font-size: 0.75rem; padding: 0.32rem 0.4rem; }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -38,6 +136,126 @@
             --border: #e2e8f0;
         }
 
+        /* تحسينات زر التثبيت */
+        #install-btn {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #install-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        #install-btn:hover::before {
+            left: 100%;
+        }
+
+        #install-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        #install-btn i {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* بانر التثبيت المحسن */
+        .install-banner-enhanced {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: inherit;
+            animation: slideUpBounce 0.6s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideUpBounce {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            70% {
+                transform: translateY(-10px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* تحسينات نافذة التثبيت */
+        .install-modal-content {
+            position: relative;
+        }
+
+        .install-modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .browser-detection-enhanced {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .browser-detection-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
         body.dark-mode {
             --light: #0f172a;
             --white: #1e293b;
@@ -46,31 +264,130 @@
             --border: #475569;
         }
 
+        /* تحسينات عامة للاستجابة */
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+        }
+        
+        @media (max-width: 375px) {
+            html {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 320px) {
+            html {
+                font-size: 13px;
+            }
+        }
+        
+        /* ضمان عدم تجاوز العناصر حدود الشاشة */
+        .app-container {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        
+        /* تحسين الخطوط للشاشات الصغيرة */
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                line-height: 1.3;
+            }
+        }
+        
+        /* تحسين التباعد للشاشات الصغيرة */
+        @media (max-width: 375px) {
+            .cases-grid {
+                gap: 0.6rem;
+                margin-top: 0.8rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* ضمان وضوح النصوص */
+        @media (max-width: 480px) {
+            .case-title {
+                line-height: 1.2;
+                margin: 0.2rem 0;
+            }
+            
+            .case-info {
+                line-height: 1.3;
+            }
+        }
+
+        /* تحسينات نهائية للواجهة */
+        .app-container {
+            background: var(--light);
+            min-height: 100vh;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* تحسين شريط الحالة للهواتف */
+        @media (max-width: 480px) {
+            .app-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* تحسين النصوص والخطوط */
         body {
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: var(--dark);
             direction: rtl;
             transition: all 0.3s ease;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--light);
+        /* إزالة scroll bars غير المرغوب فيها */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* Header */
         .app-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            padding: 1rem;
+            padding: 0.8rem;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            min-height: 60px;
         }
 
         body.dark-mode .app-header {
@@ -143,12 +460,12 @@
         .sidebar {
             position: fixed;
             top: 0;
-            right: -320px;
-            width: 320px;
+            right: -280px;
+            width: 280px;
             height: 100vh;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
+            box-shadow: -2px 0 20px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             transition: right 0.3s ease;
             overflow-y: auto;
@@ -184,8 +501,8 @@
         .sidebar-menu-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
+            gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
             background: transparent;
@@ -193,6 +510,7 @@
             width: 100%;
             text-align: right;
             color: var(--dark);
+            font-size: 0.9rem;
         }
 
         .sidebar-menu-item:hover {
@@ -251,21 +569,23 @@
             transform: translateX(24px);
         }
 
-        /* Main Content */
+        /* Main Content - محسّن للهواتف */
         .main-content {
-            padding: 1.2rem;
-            max-width: 1200px;
+            padding: 0.8rem;
+            max-width: 100%;
             margin: 0 auto;
+            min-height: calc(100vh - 140px);
         }
 
         .search-input {
             width: 100%;
-            padding: 0.9rem 1.1rem 0.9rem 3.2rem;
+            padding: 0.7rem 0.9rem 0.7rem 2.8rem;
             border: 2px solid var(--border);
-            border-radius: 1.2rem;
-            font-size: 1rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
             background: white;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         body.dark-mode .search-input {
@@ -274,31 +594,73 @@
 
         .cases-grid {
             display: grid;
-            gap: 1.2rem;
+            gap: 0.8rem;
             grid-template-columns: 1fr;
-            margin-top: 1.2rem;
+            margin-top: 1rem;
+            padding: 0 0.2rem;
+        }
+
+        /* تحسين الشبكة للأجهزة المختلفة */
+        @media (min-width: 480px) {
+            .cases-grid {
+                gap: 1rem;
+                padding: 0 0.4rem;
+            }
         }
 
         @media (min-width: 768px) {
             .cases-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.2rem;
+                padding: 0;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .cases-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.4rem;
             }
         }
 
         @media (min-width: 1200px) {
             .cases-grid {
                 grid-template-columns: repeat(3, 1fr);
+                gap: 1.6rem;
             }
         }
 
         .case-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 1.2rem;
-            padding: 1.4rem;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-            transition: all 0.4s ease;
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
             cursor: pointer;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .case-card:hover::before {
+            opacity: 1;
         }
 
         body.dark-mode .case-card {
@@ -306,25 +668,89 @@
         }
 
         .case-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 50px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
         }
 
         .case-number {
             background: linear-gradient(135deg, var(--primary-light), rgba(139, 92, 246, 0.1));
             color: var(--primary);
-            padding: 0.4rem 0.8rem;
-            border-radius: 0.8rem;
-            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
             font-weight: 700;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .case-status {
-            padding: 0.4rem 0.8rem;
-            border-radius: 1.2rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .case-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0.3rem 0;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .case-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
             font-size: 0.75rem;
-            font-weight: 700;
+            color: var(--gray);
+        }
+
+        .case-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .case-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .action-btn {
+            padding: 0.3rem 0.6rem;
+            border: none;
+            border-radius: 0.4rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
         }
 
         .status-مسودة { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #374151; }
@@ -419,21 +845,816 @@
         }
 
         .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 2rem;
+            overflow: hidden;
+            z-index: 9999;
+            font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+            direction: rtl;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
-            border-radius: 2rem;
-            padding: 2.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 0;
+            padding: 3rem 2rem;
+            width: 100%;
+            height: 100%;
+            max-width: 400px;
+            max-height: none;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(212, 175, 55, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(99, 102, 241, 0.1) 0%, 
+                rgba(139, 92, 246, 0.1) 25%,
+                rgba(16, 185, 129, 0.1) 50%,
+                rgba(245, 158, 11, 0.1) 75%,
+                rgba(239, 68, 68, 0.1) 100%);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .login-content {
+            position: relative;
+            z-index: 1;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-header {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        /* الشعار الذهبي المميز */
+        .login-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .logo-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 3px solid #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 8px;
+            box-shadow: 
+                0 8px 20px rgba(212, 175, 55, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+            animation: logoGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 8px 20px rgba(212, 175, 55, 0.3),
+                    0 0 0 1px rgba(212, 175, 55, 0.2);
+            }
+            50% { 
+                box-shadow: 
+                    0 12px 30px rgba(212, 175, 55, 0.5),
+                    0 0 0 2px rgba(212, 175, 55, 0.4);
+            }
+        }
+
+        .login-icon {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, 
+                #d4af37 0%, 
+                #ffd700 25%, 
+                #ffed4e 50%, 
+                #d4af37 75%, 
+                #b8860b 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+            background-color: #0f172a;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: iconGlow 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes iconGlow {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .login-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 0.5rem 0 0.2rem;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-family: 'Inter', 'Cairo', 'Amiri', serif;
+            direction: ltr;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #94a3b8;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+            direction: rtl;
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 2rem;
+            opacity: 0.9;
+        }
+
+        .login-form {
+            width: 100%;
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            text-align: right;
+            letter-spacing: 0.5px;
+            direction: rtl;
+        }
+
+        .form-control-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1.2rem 3.5rem 1.2rem 1.5rem;
+            border: 2px solid rgba(71, 85, 105, 0.4);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 
+                0 0 0 3px rgba(212, 175, 55, 0.15),
+                0 8px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .form-control:focus + .form-icon {
+            color: #d4af37;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* زر تسجيل الدخول الذهبي */
+        .login-btn {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, 
+                #d4af37 0%, 
+                #ffd700 25%, 
+                #ffed4e 50%, 
+                #d4af37 75%, 
+                #b8860b 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 12px;
+            color: #0f172a;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 20px rgba(212, 175, 55, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.2);
+            margin: 2rem 0 1.5rem;
+            animation: buttonShine 3s ease infinite;
+        }
+
+        @keyframes buttonShine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 25px rgba(212, 175, 55, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.3);
+            background-position: 100% 50%;
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .security-info {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            text-align: center;
+            direction: rtl;
+        }
+
+        .security-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            direction: rtl;
+        }
+
+        .security-text i {
+            color: #10b981;
+        }
+
+        /* تأثيرات الجسيمات المتحركة في الخلفية */
+        .login-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+                radial-gradient(circle at 60% 60%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 60px 60px, 100px 100px, 80px 80px, 120px 120px;
+            animation: particleMove 25s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes particleMove {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-60px, -60px) rotate(360deg); }
+        }
+
+        /* تحسينات للوضع الليلي */
+        body.dark-mode .login-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .form-control {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--light);
+        }
+
+        body.dark-mode .form-control:focus {
+            background: rgba(51, 65, 85, 0.98);
+            border-color: var(--primary);
+        }
+
+        body.dark-mode .form-control::placeholder {
+            color: rgba(241, 245, 249, 0.6);
+        }
+
+        body.dark-mode .security-info {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Media Queries شاملة ومحدثة */
+        
+        /* للشاشات الصغيرة جداً (320px - 375px) */
+        @media (max-width: 375px) {
+            .main-content {
+                padding: 0.4rem;
+            }
+            
+            .app-header {
+                padding: 0.5rem;
+                min-height: 45px;
+            }
+            
+            .app-title {
+                font-size: 1rem;
+            }
+            
+            .sidebar {
+                width: 100vw;
+                right: -100vw;
+            }
+            
+            .case-card {
+                padding: 0.6rem;
+                min-height: 90px;
+            }
+            
+            .case-number, .case-status {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.4rem;
+            }
+            
+            .case-title {
+                font-size: 0.8rem;
+            }
+            
+            .case-info {
+                font-size: 0.7rem;
+            }
+            
+            .action-btn {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.65rem;
+            }
+            
+            .notifications-panel {
+                top: 55px;
+                left: 0.25rem;
+                right: 0.25rem;
+                max-width: 100%;
+                max-height: 55vh;
+            }
+            
+            .notifications-header {
+                padding: 0.8rem;
+                min-height: 40px;
+            }
+            
+            .notifications-header h3 {
+                font-size: 0.9rem;
+            }
+            
+            .chat-messages {
+                padding: 0.6rem;
+                max-height: 200px;
+                min-height: 150px;
+            }
+            
+            .chat-message-content {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+            
+            .chat-input-container {
+                padding: 0.5rem;
+                min-height: 45px;
+            }
+            
+            .chat-input-container input {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+                min-height: 30px;
+            }
+            
+            .chat-input-container button {
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* للشاشات الصغيرة (376px - 480px) */
+        @media (min-width: 376px) and (max-width: 480px) {
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .sidebar {
+                width: 85vw;
+                right: -85vw;
+            }
+            
+            .case-card {
+                padding: 0.7rem;
+                min-height: 95px;
+            }
+            
+            .notifications-panel {
+                max-width: 320px;
+            }
+            
+            .chat-messages {
+                max-height: 220px;
+                min-height: 170px;
+            }
+        }
+
+        /* للشاشات المتوسطة (481px - 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .sidebar {
+                width: 300px;
+                right: -300px;
+            }
+            
+            .case-card {
+                padding: 0.8rem;
+                min-height: 110px;
+            }
+            
+            .notifications-panel {
+                max-width: 350px;
+            }
+        }
+
+        /* للأجهزة اللوحية (769px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .main-content {
+                padding: 1rem;
+                max-width: 90%;
+            }
+            
+            .notifications-panel {
+                max-width: 400px;
+                max-height: 65vh;
+            }
+            
+            .chat-messages {
+                max-height: 280px;
+            }
+        }
+
+        /* تحسينات لأجهزة اللمس */
+        @media (hover: none) and (pointer: coarse) {
+            .case-card:hover {
+                transform: none;
+            }
+            
+            .action-btn:hover {
+                transform: none;
+            }
+            
+            .chat-input-container button:hover {
+                transform: none;
+            }
+            
+            /* زيادة المساحة للمس */
+            .action-btn {
+                min-height: 32px;
+                min-width: 32px;
+            }
+            
+            .sidebar-menu-item {
+                padding: 1rem 1.2rem;
+                min-height: 48px;
+            }
+        }
+        
+        /* للشاشات الصغيرة جداً (أقل من 360px) */
+        @media (max-width: 360px) {
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .app-header {
+                padding: 0.6rem;
+                min-height: 50px;
+            }
+            
+            .header-content {
+                gap: 0.5rem;
+            }
+            
+            .sidebar {
+                width: 100vw;
+                right: -100vw;
+            }
+            
+            .case-card {
+                padding: 0.8rem;
+                min-height: 100px;
+            }
+            
+            .case-number, .case-status {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+            
+            /* تحسينات خاصة للدردشة */
+            .notifications-panel {
+                top: 55px;
+                left: 0.2rem;
+                right: 0.2rem;
+                max-height: 75vh;
+                border-radius: 0.8rem;
+            }
+            
+            .notifications-header {
+                padding: 0.8rem;
+                min-height: 45px;
+            }
+            
+            .notifications-header h3 {
+                font-size: 0.9rem;
+            }
+            
+            .chat-messages {
+                max-height: calc(75vh - 100px);
+                min-height: 100px;
+                padding: 0.5rem;
+            }
+            
+            .chat-input-container {
+                padding: 0.5rem;
+                min-height: 45px;
+                position: sticky;
+                bottom: 0;
+                background: var(--white);
+                border-top: 1px solid var(--border);
+                z-index: 20;
+            }
+            
+            .chat-input-container input {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+                min-height: 32px;
+                border-radius: 16px;
+            }
+            
+            .chat-input-container button {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ضمان ظهور نافذة الإدخال على جميع الشاشات */
+        @media (max-width: 768px) {
+            .notifications-panel {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                max-height: 80vh;
+            }
+            
+            .notifications-header {
+                flex-shrink: 0;
+                order: 1;
+            }
+            
+            .chat-messages {
+                flex: 1;
+                order: 2;
+                overflow-y: auto;
+                max-height: calc(80vh - 100px);
+            }
+            
+            .chat-input-container {
+                flex-shrink: 0;
+                order: 3;
+                position: relative;
+                bottom: auto;
+                background: var(--white);
+                border-top: 1px solid var(--border);
+                z-index: 100;
+                margin-top: auto;
+            }
+            
+            /* إزالة أي تأثيرات قد تخفي النافذة */
+            .chat-input-container,
+            .chat-input-container input,
+            .chat-input-container button {
+                visibility: visible !important;
+                display: flex !important;
+                opacity: 1 !important;
+            }
+            
+            .chat-input-container input {
+                display: block !important;
+            }
+        }
+        @media (min-width: 361px) and (max-width: 480px) {
+            .main-content {
+                padding: 0.6rem;
+            }
+            
+            .sidebar {
+                width: 90vw;
+                right: -90vw;
+            }
+            
+            .case-card {
+                padding: 0.9rem;
+                min-height: 110px;
+            }
+        }
+
+        /* للشاشات المتوسطة (481px - 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .main-content {
+                padding: 0.8rem;
+            }
+            
+            .sidebar {
+                width: 300px;
+                right: -300px;
+            }
+            
+            .case-card {
+                padding: 1rem;
+                min-height: 120px;
+            }
+        }
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 1.5rem;
+                border-radius: 0;
+            }
+
+            .login-content {
+                max-width: 100%;
+                padding: 0 1rem;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+
+            .login-icon {
+                font-size: 4rem;
+            }
+
+            .form-control {
+                padding: 1.3rem 1.5rem 1.3rem 3.5rem;
+                font-size: 1rem;
+            }
+
+            .login-btn {
+                padding: 1.3rem 2rem;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1rem;
+            }
+
+            .login-content {
+                padding: 0 0.5rem;
+            }
+
+            .login-title {
+                font-size: 1.8rem;
+            }
+
+            .login-subtitle {
+                font-size: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
         }
 
         /* نظام الإشعارات */
@@ -517,25 +1738,27 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* نافذة الإشعارات */
+        /* نافذة الدردشة المحسنة */
         .notifications-panel {
             position: fixed;
-            top: 80px;
-            left: 1rem;
-            right: 1rem;
-            max-width: 400px;
+            top: 70px;
+            left: 0.5rem;
+            right: 0.5rem;
+            max-width: 350px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             z-index: 1001;
-            max-height: 70vh;
+            max-height: 60vh;
             overflow: hidden;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-20px);
+            transform: translateY(-15px);
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .notifications-panel.show {
@@ -549,11 +1772,18 @@
         }
 
         .notifications-header {
-            padding: 1.5rem;
+            padding: 1rem;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            min-height: 50px;
+        }
+
+        .notifications-header h3 {
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 600;
         }
 
         .notifications-title {
@@ -890,12 +2120,13 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem;
-            max-height: 300px;
+            padding: 0.8rem;
+            max-height: calc(60vh - 120px);
+            min-height: 150px;
         }
 
         .chat-message {
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
             display: block;
             clear: both;
             position: relative;
@@ -906,8 +2137,8 @@
         }
 
         .chat-message.sent .chat-message-content {
-            max-width: 70%;
-            margin-right: 8px;
+            max-width: 75%;
+            margin-right: 0.5rem;
             float: right;
         }
 
@@ -916,24 +2147,26 @@
         }
 
         .chat-message.received .chat-message-content {
-            max-width: 70%;
-            margin-left: 8px;
+            max-width: 75%;
+            margin-left: 0.5rem;
             float: left;
         }
 
         .chat-message-content {
-            padding: 10px 14px;
-            border-radius: 18px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 0.6rem 0.8rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             position: relative;
             word-wrap: break-word;
-            min-width: 120px;
+            min-width: 80px;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
         .chat-message.sent .chat-message-content {
-            background: #dcf8c6; /* أخضر فاتح مثل WhatsApp */
+            background: #dcf8c6;
             color: #303030;
-            border-bottom-right-radius: 6px;
+            border-bottom-right-radius: 0.4rem;
         }
 
         .chat-message.sent .chat-message-content::after {
@@ -1002,20 +2235,26 @@
         }
 
         .chat-input-container {
-            padding: 1rem;
+            padding: 0.6rem;
             background: var(--white);
             border-top: 1px solid var(--border);
             display: flex;
-            gap: 0.5rem;
+            gap: 0.3rem;
             align-items: center;
+            min-height: 50px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
         }
 
         .chat-input-container input {
             flex: 1;
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
+            border-radius: 1.2rem;
+            padding: 0.5rem 0.7rem;
+            font-size: 0.8rem;
+            min-height: 35px;
+            outline: none;
         }
 
         .chat-input-container input:focus {
@@ -1028,13 +2267,14 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
         }
 
         .chat-input-container button:hover {
@@ -1443,6 +2683,237 @@
         body.dark-mode .delivery-status {
             color: var(--gray);
         }
+
+        /* استجابة للهاتف المحمول */
+        @media (max-width: 480px) {
+            .login-card {
+                max-width: 100%;
+                padding: 2rem 1.5rem;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .logo-image {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .login-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 1.3rem;
+                bottom: -3px;
+                right: -3px;
+            }
+            
+            /* تحسينات الدردشة للهواتف */
+            .notifications-panel {
+                top: 60px;
+                left: 0.3rem;
+                right: 0.3rem;
+                max-height: 70vh;
+                max-width: none;
+            }
+            
+            .chat-messages {
+                max-height: calc(70vh - 110px);
+                min-height: 120px;
+                padding: 0.6rem;
+            }
+            
+            .chat-input-container {
+                padding: 0.6rem;
+                min-height: 50px;
+                gap: 0.3rem;
+                flex-shrink: 0;
+                position: sticky;
+                bottom: 0;
+                background: var(--white);
+                border-top: 1px solid var(--border);
+            }
+            
+            .chat-input-container input {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.8rem;
+                min-height: 35px;
+                border-radius: 18px;
+            }
+            
+            .chat-input-container button {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+                flex-shrink: 0;
+            }
+            
+            .chat-message {
+                margin-bottom: 0.6rem;
+                max-width: 85%;
+            }
+            
+            .chat-message-content {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            
+            .chat-message-time {
+                font-size: 0.7rem;
+                margin-top: 0.3rem;
+            }
+            
+            .login-title {
+                font-size: 1.8rem;
+                letter-spacing: 1.5px;
+            }
+            
+            .login-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .form-control {
+                padding: 1rem 3rem 1rem 1.2rem;
+                font-size: 0.95rem;
+                text-align: right;
+            }
+            
+            .form-icon {
+                left: 1rem;
+            }
+            
+            .login-btn {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* تأثيرات للمس (Touch) */
+        @media (hover: none) and (pointer: coarse) {
+            .login-btn:hover {
+                transform: none;
+                box-shadow: 
+                    0 8px 20px rgba(212, 175, 55, 0.3),
+                    0 0 0 1px rgba(212, 175, 55, 0.2);
+            }
+            
+            .form-control:focus {
+                transform: none;
+            }
+            
+            .case-card:hover {
+                transform: none;
+            }
+            
+            .sidebar-menu-item:hover {
+                background: var(--primary-light);
+            }
+        }
+
+        /* تحسينات إضافية لأحجام شاشات مختلفة */
+        
+        /* للشاشات الطويلة (مثل iPhone X وما بعده) */
+        @media (min-height: 812px) and (max-width: 480px) {
+            .main-content {
+                min-height: calc(100vh - 120px);
+                padding-bottom: 1rem;
+            }
+            
+            .case-card {
+                min-height: 130px;
+            }
+        }
+
+        /* للشاشات العريضة الصغيرة (landscape mode) */
+        @media (max-height: 500px) and (min-width: 600px) {
+            .sidebar {
+                width: 250px;
+                right: -250px;
+            }
+            
+            .app-header {
+                padding: 0.6rem;
+                min-height: 50px;
+            }
+            
+            .main-content {
+                padding: 0.6rem;
+            }
+            
+            .case-card {
+                padding: 0.8rem;
+                min-height: 90px;
+            }
+        }
+
+        /* تحسينات للتابلت */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .sidebar {
+                width: 320px;
+                right: -320px;
+            }
+            
+            .main-content {
+                padding: 1rem;
+                max-width: 95%;
+            }
+            
+            .cases-grid {
+                gap: 1.2rem;
+            }
+            
+            .case-card {
+                padding: 1.2rem;
+                min-height: 140px;
+            }
+        }
+
+        /* تحسينات عامة للهواتف */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            overflow-x: hidden;
+        }
+
+        /* منع التكبير عند الضغط على input */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+
+        @media (max-width: 480px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        /* تحسين التمرير */
+        .main-content, .sidebar {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* تحسين الضغطات على الهواتف */
+        button, .case-card, .sidebar-menu-item {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .login-screen * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* إخفاء شريط التمرير */
+        .login-card::-webkit-scrollbar {
+            display: none;
+        }
+
+        .login-card {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 
@@ -1454,31 +2925,60 @@
     </audio>
 
     <div class="app-container">
+        <!-- لوحة تحكم الأدمن -->
+        <div id="admin-panel" class="hidden" style="padding:2rem;">
+            <h2 style="text-align:center;"><i class="fas fa-user-shield"></i> لوحة تحكم الأدمن</h2>
+            <div id="admin-lawyers-list" style="margin-bottom:2rem;"></div>
+            <div id="admin-lawyer-details"></div>
+            <button onclick="logout()" style="margin-top:2rem;" class="btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        </div>
         <!-- Login Screen -->
         <div id="login-screen" class="login-screen">
             <div class="login-card">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <i class="fas fa-balance-scale" style="font-size: 4rem; color: var(--primary);"></i>
-                    <h1 style="margin: 1rem 0 0.5rem;">تطبيق المحامين</h1>
-                    <p style="color: var(--gray);">تطبيق الإدارة القانونية</p>
+                <div class="login-content">
+                    <!-- الشعار الذهبي -->
+                    <div class="login-header">
+                        <div class="logo-container">
+                            <img src="logo.png" alt="شعار التطبيق" class="logo-image">
+                            <i class="fas fa-gavel login-icon"></i>
+                        </div>
+                        <h1 class="login-title">ADVOCACY</h1>
+                        <p class="login-subtitle">تطبيق قانوني</p>
+                    </div>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">رقم ترخيص المحامي</label>
+                            <div class="form-control-wrapper">
+                                <input type="text" id="license-number" class="form-control" placeholder="أدخل رقم ترخيص المحامي" required>
+                                <i class="fas fa-id-card form-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">رقم الهاتف</label>
+                            <div class="form-control-wrapper">
+                                <input type="text" id="phone-number" class="form-control" placeholder="أدخل رقم الهاتف" required>
+                                <i class="fas fa-phone form-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="login-btn" id="login-btn">
+                            <span class="btn-text">
+                                <i class="fas fa-sign-in-alt"></i>
+                                تسجيل الدخول
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <!-- معلومات الأمان -->
+                    <div class="security-info">
+                        <p class="security-text">
+                            <i class="fas fa-shield-alt"></i>
+                            آمن ومشفر
+                        </p>
+                    </div>
                 </div>
-                
-                <form id="login-form">
-                    <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 700;">رقم ترخيص المحامي</label>
-                        <input type="text" id="license-number" class="form-control" placeholder="أدخل رقم ترخيص المحامي" required>
-                    </div>
-                    
-                    <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 700;">رقم الهاتف</label>
-                        <input type="tel" id="phone-number" class="form-control" placeholder="أدخل رقم الهاتف" required>
-                    </div>
-                    
-                    <button type="submit" class="btn" id="login-btn">
-                        <i class="fas fa-sign-in-alt"></i>
-                        تسجيل الدخول
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -1495,6 +2995,10 @@
                 </div>
 
                 <div style="padding: 1rem;">
+                    <button class="sidebar-menu-item" onclick="showInstallPrompt(); closeSidebar();" id="install-menu-btn" style="display: none;">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>تثبيت التطبيق</span>
+                    </button>
                     <button class="sidebar-menu-item" onclick="refreshData(); closeSidebar();">
                         <i class="fas fa-sync-alt"></i>
                         <span>تحديث البيانات</span>
@@ -1565,6 +3069,9 @@
                         تطبيق المحامين
                     </div>
                     <div style="display: flex;">
+                        <button class="notification-bell" onclick="showInstallPrompt()" id="install-btn" style="display: none;">
+                            <i class="fas fa-download"></i>
+                        </button>
                         <button class="notification-bell" onclick="toggleChat()" id="chat-bell">
                             <i class="fas fa-comments"></i>
                             <span class="notification-badge hidden" id="chat-badge">0</span>
@@ -1662,7 +3169,69 @@
     </div>
 
     <!-- Modals -->
-    <div id="case-details-modal" class="modal-overlay">
+    <div id="install-modal" class="modal-overlay">
+        <div class="modal">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+                <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-mobile-alt" style="color: var(--primary);"></i>
+                    تثبيت تطبيق المحامين
+                </h3>
+                <button onclick="closeModal('install-modal')" style="float: left; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, var(--primary-light), rgba(139, 92, 246, 0.1)); padding: 2rem; border-radius: 1rem; margin-bottom: 1rem;">
+                        <i class="fas fa-mobile-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h4 style="margin-bottom: 0.5rem;">قم بتثبيت التطبيق على جهازك</h4>
+                        <p style="color: var(--gray); font-size: 0.9rem;">احصل على تجربة أفضل مع التطبيق المثبت</p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h5 style="margin-bottom: 0.8rem; color: var(--primary);">
+                        <i class="fas fa-star"></i>
+                        مميزات التطبيق المثبت:
+                    </h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            عمل بدون إنترنت
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            إشعارات فورية
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            فتح سريع من الشاشة الرئيسية
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            تجربة تطبيق أصلي
+                        </li>
+                    </ul>
+                </div>
+                
+                <div id="install-instructions" style="margin-bottom: 1.5rem; padding: 1rem; background: var(--gray-light); border-radius: 0.8rem; display: none;">
+                    <h6 style="margin-bottom: 0.5rem; color: var(--primary);">تعليمات التثبيت:</h6>
+                    <p id="install-instructions-text" style="font-size: 0.85rem; color: var(--gray); line-height: 1.4;"></p>
+                </div>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    <button id="install-confirm-btn" class="btn" onclick="confirmInstallation()" style="flex: 1;">
+                        <i class="fas fa-download"></i>
+                        تثبيت الآن
+                    </button>
+                    <button onclick="closeModal('install-modal')" style="flex: 1; background: var(--gray); color: white; border: none; padding: 0.9rem; border-radius: 1rem; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="case-details-modal" class="modal-overlay">..
         <div class="modal">
             <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
                 <h3 id="case-details-title">تفاصيل الدعوى</h3>
@@ -1832,12 +3401,22 @@
         let chatMessages = [];
         let previousMessageCount = 0; // لتتبع الرسائل السابقة
 
+        // PWA Installation variables
+        let deferredPrompt = null;
+        let isInstallable = false;
+        let isStandalone = false;
+
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
             setupConnectionMonitoring();
             setupFormHandlers();
             loadSettings();
-            setupNotifications();
+            initializePWA();
+            
+            // Additional check for install eligibility after DOM is loaded
+            setTimeout(() => {
+                checkInstallEligibility();
+            }, 3000);
         });
 
         // نظام إدارة الإشعارات
@@ -2409,7 +3988,7 @@
             connectedRef.on('value', (snapshot) => {
                 isConnected = snapshot.val() === true;
                 updateConnectionStatus();
-                if (isConnected && currentLawyer) {
+                if (isConnected && currentLawyer && !currentLawyer.isAdmin) {
                     loadLawyerCases();
                     // إعداد مراقبة الإشعارات عند الاتصال
                     setupNotificationListeners();
@@ -2425,7 +4004,7 @@
             });
 
             database.ref('system/lastUpdate').on('value', (snapshot) => {
-                if (currentLawyer) {
+                if (currentLawyer && !currentLawyer.isAdmin) {
                     loadLawyerCases();
                 }
             });
@@ -2478,39 +4057,55 @@
             if (savedLawyer) {
                 console.log('📂 استرداد بيانات المحامي المحفوظة');
                 currentLawyer = JSON.parse(savedLawyer);
-                
+
                 // إضافة معرّف فريد إذا لم يكن موجوداً
                 if (!currentLawyer.id) {
                     currentLawyer.id = currentLawyer.license || Date.now().toString();
-                    localStorage.setItem('currentLawyer', JSON.stringify(currentLawyer));
                 }
+
+                // دعم رجعي: إذا كانت الجلسة تشير لمدير النظام لكن بدون isAdmin، علّمها كأدمن
+                if (!currentLawyer.isAdmin && (currentLawyer.id === 'admin' || currentLawyer.name === 'مدير النظام' || currentLawyer.license === 'admin')) {
+                    currentLawyer.isAdmin = true;
+                }
+
+                // حفظ أي تعديلات للكيان المستعاد
+                localStorage.setItem('currentLawyer', JSON.stringify(currentLawyer));
                 
                 console.log('👤 المحامي المحفوظ:', currentLawyer.name, 'ID:', currentLawyer.id);
-                showMainApp();
-                updateLawyerInfo();
-                
-                // انتظار الاتصال ثم تحميل الدعاوى
-                if (isConnected) {
-                    loadLawyerCases();
+                // إذا كان الأدمن، أعد فتح لوحة الأدمن بدلاً من واجهة المحامي العادية
+                if (currentLawyer.isAdmin) {
+                    console.log('🔐 استعادة جلسة الأدمن');
+                    showAdminPanel();
+                    updateLawyerInfo();
                 } else {
-                    console.log('⏳ انتظار الاتصال بـ Firebase...');
-                    // إعادة المحاولة كل ثانيتين
-                    const connectionCheck = setInterval(() => {
-                        if (isConnected) {
+                    showMainApp();
+                    updateLawyerInfo();
+                    // إعداد الإشعارات للمحامي الحالي
+                    setupNotifications();
+
+                    // انتظار الاتصال ثم تحميل الدعاوى للمحامين العاديين
+                    if (isConnected) {
+                        loadLawyerCases();
+                    } else {
+                        console.log('⏳ انتظار الاتصال بـ Firebase...');
+                        // إعادة المحاولة كل ثانيتين
+                        const connectionCheck = setInterval(() => {
+                            if (isConnected) {
+                                clearInterval(connectionCheck);
+                                console.log('✅ تم الاتصال، تحميل الدعاوى...');
+                                loadLawyerCases();
+                            }
+                        }, 2000);
+
+                        // إيقاف المحاولة بعد 30 ثانية
+                        setTimeout(() => {
                             clearInterval(connectionCheck);
-                            console.log('✅ تم الاتصال، تحميل الدعاوى...');
-                            loadLawyerCases();
-                        }
-                    }, 2000);
-                    
-                    // إيقاف المحاولة بعد 30 ثانية
-                    setTimeout(() => {
-                        clearInterval(connectionCheck);
-                        if (!isConnected) {
-                            console.log('❌ انتهت مهلة انتظار الاتصال');
-                            alert('لا يمكن الاتصال بالخادم، يرجى التحقق من الإنترنت');
-                        }
-                    }, 30000);
+                            if (!isConnected) {
+                                console.log('❌ انتهت مهلة انتظار الاتصال');
+                                alert('لا يمكن الاتصال بالخادم، يرجى التحقق من الإنترنت');
+                            }
+                        }, 30000);
+                    }
                 }
             } else {
                 console.log('👤 لا توجد بيانات محامي محفوظة');
@@ -2531,21 +4126,32 @@
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
 
+            // بيانات الأدمن (يمكنك تغييرها لاحقاً)
+            const ADMIN_LICENSE = 'admin';
+            const ADMIN_PHONE = '0000';
             try {
+                // تحقق من بيانات الأدمن أولاً
+                if (licenseNumber === ADMIN_LICENSE && phoneNumber === ADMIN_PHONE) {
+                    // تسجيل دخول كأدمن
+                    currentLawyer = { name: 'مدير النظام', id: 'admin', isAdmin: true };
+                    localStorage.setItem('currentLawyer', JSON.stringify(currentLawyer));
+                    showAdminPanel();
+                    alert('تم تسجيل الدخول كمدير النظام');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                    return;
+                }
+                // تسجيل دخول كمحامي عادي
                 console.log('🔍 البحث عن المحامي برقم الترخيص:', licenseNumber, 'والهاتف:', phoneNumber);
-                
                 let lawyersSnapshot = await database.ref('data/lawyers').once('value');
                 let lawyers = lawyersSnapshot.val();
-                
                 console.log('📊 المحامون في data/lawyers:', lawyers ? (Array.isArray(lawyers) ? lawyers.length : Object.keys(lawyers).length) : 0);
-                
                 if (!lawyers) {
                     console.log('⚠️ لا توجد بيانات في data/lawyers، البحث في lawyers...');
                     lawyersSnapshot = await database.ref('lawyers').once('value');
                     lawyers = lawyersSnapshot.val();
                     console.log('📊 المحامون في lawyers:', lawyers ? (Array.isArray(lawyers) ? lawyers.length : Object.keys(lawyers).length) : 0);
                 }
-
                 let foundLawyer = null;
                 if (lawyers) {
                     if (Array.isArray(lawyers)) {
@@ -2564,26 +4170,21 @@
                         });
                     }
                 }
-
                 if (foundLawyer) {
                     console.log('🎉 تم العثور على المحامي:', foundLawyer.name);
-                    
-                    // إضافة معرّف فريد إذا لم يكن موجوداً
                     if (!foundLawyer.id) {
                         foundLawyer.id = foundLawyer.license || Date.now().toString();
                     }
-                    
                     currentLawyer = foundLawyer;
                     localStorage.setItem('currentLawyer', JSON.stringify(foundLawyer));
-                    
                     updateLawyerInfo();
                     showMainApp();
                     loadLawyerCases();
+                    // إعداد الإشعارات للمحامي الحالي
+                    setupNotifications();
                     alert(`مرحباً ${foundLawyer.name}`);
                 } else {
                     console.log('❌ لم يتم العثور على المحامي');
-                    
-                    // إظهار تفاصيل المحامين المتاحين للتشخيص
                     if (lawyers) {
                         console.log('📋 المحامون المتاحون:');
                         if (Array.isArray(lawyers)) {
@@ -2600,23 +4201,25 @@
                             });
                         }
                     }
-                    
                     alert('بيانات المحامي غير صحيحة\nتحقق من رقم الترخيص ورقم الهاتف');
                 }
             } catch (error) {
                 console.error('❌ خطأ في تسجيل الدخول:', error);
                 alert('خطأ في تسجيل الدخول: ' + error.message);
             }
-
             loginBtn.disabled = false;
             loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
         }
 
         function logout() {
+            // إزالة جلسة المستخدم محلياً
             localStorage.removeItem('currentLawyer');
             currentLawyer = null;
             allCases = [];
             filteredCases = [];
+            // إغلاق أي واجهات خاصة بالأدمن
+            document.getElementById('admin-panel')?.classList.add('hidden');
+            // عرض شاشة تسجيل الدخول
             showLoginScreen();
             alert('تم تسجيل الخروج بنجاح');
         }
@@ -2624,11 +4227,288 @@
         function showLoginScreen() {
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('admin-panel')?.classList.add('hidden');
         }
 
         function showMainApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('admin-panel')?.classList.add('hidden');
+        }
+
+        // واجهة الأدمن
+        function showAdminPanel() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('admin-panel').classList.remove('hidden');
+            loadAllLawyersForAdmin();
+        }
+
+        // تحميل جميع المحامين وعرضهم للأدمن
+        async function loadAllLawyersForAdmin() {
+            const container = document.getElementById('admin-lawyers-list');
+            container.innerHTML = '<div style="text-align:center;padding:2rem;">جاري التحميل...</div>';
+            let allLawyers = [];
+            // جلب من data/lawyers
+            let snapshot1 = await database.ref('data/lawyers').once('value');
+            let lawyers1 = snapshot1.val();
+            if (lawyers1) {
+                if (Array.isArray(lawyers1)) {
+                    allLawyers = allLawyers.concat(lawyers1.filter(l => l));
+                } else {
+                    allLawyers = allLawyers.concat(Object.values(lawyers1));
+                }
+            }
+            // جلب من lawyers (إذا لم يكن موجود في data/lawyers)
+            let snapshot2 = await database.ref('lawyers').once('value');
+            let lawyers2 = snapshot2.val();
+            if (lawyers2) {
+                if (Array.isArray(lawyers2)) {
+                    allLawyers = allLawyers.concat(lawyers2.filter(l => l));
+                } else {
+                    allLawyers = allLawyers.concat(Object.values(lawyers2));
+                }
+            }
+            // إزالة التكرار حسب رقم الترخيص
+            const uniqueLawyers = [];
+            const seenLicenses = new Set();
+            allLawyers.forEach(lawyer => {
+                if (lawyer && lawyer.license && !seenLicenses.has(lawyer.license)) {
+                    uniqueLawyers.push(lawyer);
+                    seenLicenses.add(lawyer.license);
+                }
+            });
+            if (uniqueLawyers.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:2rem;">لا يوجد محامين</div>';
+                return;
+            }
+            // جلب عدد الدعاوى لكل محامي (من جميع المسارات)
+            let casesPaths = ['data/cases', 'cases'];
+            let allCases = [];
+            for (const path of casesPaths) {
+                let casesSnapshot = await database.ref(path).once('value');
+                let cases = casesSnapshot.val();
+                if (cases) {
+                    allCases = allCases.concat(Object.values(cases));
+                }
+            }
+            container.innerHTML = uniqueLawyers.map(lawyer => {
+                // حساب عدد الدعاوى المرتبطة
+                const lawyerCases = allCases.filter(c => c && c.lawyerName && c.lawyerName === lawyer.name);
+                return `
+                <div class="admin-lawyer-card compact-card" onclick="showAdminLawyerDetails('${lawyer.id || lawyer.license}')" style="cursor:pointer;transition:box-shadow .2s;">
+                    <div style="display:flex;align-items:center;gap:0.7rem;font-size:1.05rem;font-weight:700;color:#3b3b3b;">
+                        <i class='fas fa-user-shield' style='color:#7c3aed;font-size:1.4rem;'></i>
+                        <span class="truncate">${lawyer.name}</span>
+                    </div>
+                    <div style="font-size:0.92rem;color:#444;">رقم الترخيص: <b>${lawyer.license}</b></div>
+                    <div style="font-size:0.92rem;color:#444;">رقم الهاتف: <b>${lawyer.phone || '-'}</b></div>
+                    <div style="font-size:0.92rem;color:#444;">عدد الدعاوى المرتبطة: <b>${lawyerCases.length}</b></div>
+                    <div style="margin-top:0.4rem;width:100%;text-align:left;">
+                        <span style='color:#7c3aed;font-size:0.88rem;'>انقر لعرض التفاصيل</span>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // عرض بيانات المحامي والدعاوى للأدمن
+        async function showAdminLawyerDetails(lawyerId) {
+            const detailsContainer = document.getElementById('admin-lawyer-details');
+            detailsContainer.innerHTML = '<div style="text-align:center;padding:2rem;">جاري التحميل...</div>';
+            // جلب بيانات المحامي من المسارين
+            let lawyer = null;
+            let lawyerSnapshot = await database.ref('data/lawyers/' + lawyerId).once('value');
+            lawyer = lawyerSnapshot.val();
+            if (!lawyer) {
+                // جرب من المسار الآخر
+                lawyerSnapshot = await database.ref('lawyers/' + lawyerId).once('value');
+                lawyer = lawyerSnapshot.val();
+            }
+            if (!lawyer) {
+                detailsContainer.innerHTML = '<div style="text-align:center;padding:2rem; color:#e74c3c;">لم يتم العثور على بيانات المحامي في أي مسار</div>';
+                return;
+            }
+            // جلب جميع الدعاوى المرتبطة من جميع المسارات
+            let allCasesArr = [];
+            let casesPaths = ['data/cases', 'cases'];
+            for (const path of casesPaths) {
+                let casesSnapshot = await database.ref(path).orderByChild('lawyerName').equalTo(lawyer.name).once('value');
+                let cases = casesSnapshot.val();
+                if (cases) {
+                    allCasesArr = allCasesArr.concat(Object.values(cases));
+                }
+            }
+            // جلب جميع الاستقطاعات لهذا المحامي من عدة مسارات ودمجها
+            let deductionsArr = [];
+            try {
+                const snapA = await database.ref('data/deductions').orderByChild('lawyerId').equalTo(lawyerId).once('value');
+                const a = snapA.val();
+                if (a) deductionsArr = deductionsArr.concat(Array.isArray(a) ? a.filter(Boolean) : Object.values(a));
+            } catch (e) {
+                console.warn('خطأ عند جلب data/deductions:', e.message);
+            }
+
+            try {
+                const snapB = await database.ref('deductions').orderByChild('lawyerId').equalTo(lawyerId).once('value');
+                const b = snapB.val();
+                if (b) deductionsArr = deductionsArr.concat(Array.isArray(b) ? b.filter(Boolean) : Object.values(b));
+            } catch (e) {
+                console.warn('خطأ عند جلب deductions:', e.message);
+            }
+
+            // إذا لم يُعثر على شيء بواسطة lawyerId، ابحث عبر كل الاستقطاعات بمطابقة الاسم أو رقم الترخيص
+            if (deductionsArr.length === 0) {
+                try {
+                    const snapAll = await database.ref('data/deductions').once('value');
+                    const all = snapAll.val();
+                    if (all) {
+                        const list = Array.isArray(all) ? all.filter(Boolean) : Object.values(all);
+                        deductionsArr = deductionsArr.concat(list.filter(d => {
+                            if (!d) return false;
+                            if (d.lawyerId && (d.lawyerId == lawyerId || d.lawyerId == lawyer.license)) return true;
+                            if (d.lawyerName && lawyer.name && d.lawyerName.trim() === lawyer.name.trim()) return true;
+                            if (d.lawyerLicense && lawyer.license && d.lawyerLicense == lawyer.license) return true;
+                            return false;
+                        }));
+                    }
+                } catch (e) {
+                    console.warn('خطأ عند جلب كل الاستقطاعات كنسخة احتياطية:', e.message);
+                }
+            }
+
+            // إزالة التكرار بناءً على id أو مزيج الحقول
+            const seen = new Set();
+            deductionsArr = deductionsArr.filter(d => {
+                if (!d) return false;
+                const key = d.id || d.key || `${d.caseNumber || ''}_${d.amount || ''}_${d.date || ''}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
+            console.log('🔍 استقطاعات بعد الدمج والتصفية:', deductionsArr.length, deductionsArr);
+
+            // محاولة احتياطية: جلب كل الاستقطاعات من 'deductions' بدون فلتر ومحاولة التطابق
+            if (deductionsArr.length === 0) {
+                try {
+                    const snapAll = await database.ref('deductions').once('value');
+                    const all = snapAll.val();
+                    if (all) {
+                        const list = Array.isArray(all) ? all.filter(Boolean) : Object.values(all);
+                        const matched = list.filter(d => {
+                            if (!d) return false;
+                            if (d.lawyerId && (d.lawyerId == lawyerId || d.lawyerId == lawyer.license)) return true;
+                            if (d.lawyerName && lawyer.name && d.lawyerName.trim() === lawyer.name.trim()) return true;
+                            if (d.lawyerLicense && lawyer.license && d.lawyerLicense == lawyer.license) return true;
+                            return false;
+                        });
+                        deductionsArr = deductionsArr.concat(matched);
+                        console.log('🔎 نتيجة الاطلاع الاحتياطي من /deductions:', matched.length);
+                    }
+                } catch (e) {
+                    console.warn('خطأ في الاطلاع الاحتياطي من /deductions:', e.message);
+                }
+            }
+
+            // بناء واجهة التفاصيل: عرض جميع بيانات الدعاوى بشكل مفصل مع الاستقطاعات المرتبطة بكل دعوى
+            detailsContainer.innerHTML = `
+                <div class="compact-card tight-card" style="padding-top:0.9rem; padding-bottom:0.9rem;">
+                    <div style="display:flex;align-items:center;gap:0.7rem;font-size:1.1rem;font-weight:800;color:#3b3b3b;margin-bottom:0.5rem;">
+                        <i class='fas fa-user-shield' style='color:#7c3aed;font-size:1.5rem;'></i>
+                        <span class="truncate">${lawyer.name}</span>
+                    </div>
+                    <div style="font-size:0.95rem;color:#444;margin-bottom:0.25rem;">رقم الترخيص: <b>${lawyer.license}</b></div>
+                    <div style="font-size:0.95rem;color:#444;margin-bottom:0.25rem;">رقم الهاتف: <b>${lawyer.phone || '-'}</b></div>
+                    <div style="font-size:0.95rem;color:#444;margin-bottom:0.25rem;">عدد الدعاوى المرتبطة: <b>${allCasesArr.length}</b></div>
+                </div>
+                <div style="background:#f6f6fa;border-radius:1rem;padding:0.7rem 0.4rem;margin-bottom:0.9rem;" class="tight-block">
+                    <h4 style="margin-bottom:0.35rem;color:#7c3aed;font-size:1.05rem;">الدعاوى المرتبطة (${allCasesArr.length})</h4>
+                    ${allCasesArr.length > 0 ? allCasesArr.map(c => {
+                        // الاستقطاعات المرتبطة بهذه الدعوى — مطابقة مرنة على caseNumber أو caseId
+                        const caseDeductions = deductionsArr.filter(d => {
+                            if (!d) return false;
+                            // تطابق مباشر برقم الدعوى
+                            if (d.caseNumber && c.caseNumber && d.caseNumber.toString() === c.caseNumber.toString()) return true;
+                            // تطابق حسب caseId أو id
+                            if ((d.caseId && (c.id && d.caseId.toString() === c.id.toString())) || (d.caseId && (c.firebaseId && d.caseId.toString() === c.firebaseId.toString()))) return true;
+                            if (d.id && (c.id && d.id.toString() === c.id.toString())) return true;
+                            // أحياناً يتم تخزين رقم الدعوى في الحقل case أو case_number
+                            if (d.case && c.caseNumber && d.case.toString() === c.caseNumber.toString()) return true;
+                            return false;
+                        });
+                        console.log(`🔗 دعوى ${c.caseNumber} - عدد الاستقطاعات المرتبطة: ${caseDeductions.length}`);
+                        return `
+                        <div class='compact-card tight-card' style='margin-bottom:0.6rem; padding-left:0.8rem; padding-right:0.8rem;'>
+                            <div style='font-size:1.02rem;font-weight:700;color:#3b3b3b;margin-bottom:0.4rem;'>رقم الدعوى: <b>${c.caseNumber}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>الحالة: <b>${c.status || '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>الموضوع: <b class="truncate">${c.subject || '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>المدعي: <b>${c.plaintiffName || '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>المدعى عليه: <b>${c.defendantName || '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>تاريخ التسجيل: <b>${c.fileDate ? new Date(c.fileDate).toLocaleDateString('ar-EG') : '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>المبلغ: <b>${c.amount || '-'}</b></div>
+                            <div style='color:#444;margin-bottom:0.18rem;'>آخر تحديث: <b>${c.lastModified ? new Date(c.lastModified).toLocaleString('ar-EG') : '-'}</b></div>
+                            <div style='margin-top:0.6rem;'>
+                                <h5 style='color:#7c3aed;font-size:0.98rem;margin-bottom:0.35rem;'>الاستقطاعات المرتبطة بهذه الدعوى (${caseDeductions.length})</h5>
+                                ${caseDeductions.length > 0 ? `
+                                    <div class='table-responsive deductions-table-container tight-block'>
+                                        <table class='deductions-table compact-table full-width-table'>
+                                            <thead>
+                                                <tr>
+                                                    <th>المبلغ</th>
+                                                    <th>التاريخ</th>
+                                                    <th>المصدر</th>
+                                                    <th>ملاحظات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${caseDeductions.map(d => `
+                                                    <tr>
+                                                        <td class='deduction-amount'>${d.amount || '-'}</td>
+                                                        <td>${d.date || '-'}</td>
+                                                        <td>${d.source || '-'}</td>
+                                                        <td class="truncate">${d.notes || '-'}</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ` : `<div style='color:#888;'>لا توجد استقطاعات لهذه الدعوى</div>`}
+                            </div>
+                        </div>
+                        `;
+                    }).join('') : '<div style="color:#888;">لا توجد دعاوى مرتبطة</div>'}
+                </div>
+                        <div style="background:#f6f6fa;border-radius:1rem;padding:0.9rem 0.6rem;" class="tight-block">
+                    <h4 style="margin-bottom:0.7rem;color:#7c3aed;font-size:1.1rem;">جميع الاستقطاعات (${deductionsArr.length})</h4>
+                    ${deductionsArr.length > 0 ? `
+                        <div class="table-responsive deductions-table-container tight-block">
+                            <table class="deductions-table compact-table full-width-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الدعوى</th>
+                                        <th>المبلغ</th>
+                                        <th>التاريخ</th>
+                                        <th>المصدر</th>
+                                        <th>ملاحظات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${deductionsArr.map(d => `
+                                        <tr>
+                                            <td>${d.caseNumber || '-'}</td>
+                                            <td class="deduction-amount">${d.amount || '-'}</td>
+                                            <td>${d.date || '-'}</td>
+                                            <td>${d.source || '-'}</td>
+                                            <td class="truncate">${d.notes || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : '<div style="color:#888;">لا توجد استقطاعات</div>'}
+                </div>
+            `;
         }
 
         function updateLawyerInfo() {
@@ -2874,19 +4754,36 @@
         }
 
         function searchCases() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) {
+                console.error('❌ لم يتم العثور على حقل البحث');
+                return;
+            }
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            console.log('🔍 البحث عن:', searchTerm);
             
             if (!searchTerm) {
                 filteredCases = [...allCases];
             } else {
-                filteredCases = allCases.filter(caseItem => 
-                    caseItem.caseNumber.toLowerCase().includes(searchTerm) ||
-                    caseItem.subject.toLowerCase().includes(searchTerm) ||
-                    caseItem.plaintiffName.toLowerCase().includes(searchTerm) ||
-                    caseItem.defendantName.toLowerCase().includes(searchTerm)
-                );
+                filteredCases = allCases.filter(caseItem => {
+                    const caseNumber = (caseItem.caseNumber || '').toLowerCase();
+                    const subject = (caseItem.subject || '').toLowerCase();
+                    const plaintiffName = (caseItem.plaintiffName || '').toLowerCase();
+                    const defendantName = (caseItem.defendantName || '').toLowerCase();
+                    const status = (caseItem.status || '').toLowerCase();
+                    const court = (caseItem.court || '').toLowerCase();
+                    
+                    return caseNumber.includes(searchTerm) ||
+                           subject.includes(searchTerm) ||
+                           plaintiffName.includes(searchTerm) ||
+                           defendantName.includes(searchTerm) ||
+                           status.includes(searchTerm) ||
+                           court.includes(searchTerm);
+                });
             }
             
+            console.log('✅ النتائج:', filteredCases.length, 'من', allCases.length);
             renderCases();
         }
 
@@ -3530,8 +5427,8 @@
 
             // إعداد مستمعين شاملين للرسائل من جميع المصادر الممكنة
             
-            // 1. مراقبة الرسائل في دليل المحامي
-            database.ref(`chat/${currentLawyer.id}`).on('value', (snapshot) => {
+            // 1. مراقبة الرسائل في مسار موحد
+            database.ref(`lawyerMessages/${currentLawyer.id}`).on('value', (snapshot) => {
                 console.log('🔍 فحص دليل المحامي:', currentLawyer.id);
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -3565,8 +5462,8 @@
                 }
             });
 
-            // 2. مراقبة الرسائل في دليل الإدارة
-            database.ref('chat/admin').on('value', (snapshot) => {
+            // 2. مراقبة الرسائل في مسار موحد (الإدارة)
+            database.ref(`lawyerMessages/${currentLawyer.id}`).on('value', (snapshot) => {
                 console.log('🔍 فحص دليل الإدارة');
                 if (snapshot.exists()) {
                     const adminData = snapshot.val();
@@ -3622,8 +5519,8 @@
                 }
             });
 
-            // 3. مراقبة أي رسائل جديدة في الجذر
-            database.ref('chat').on('child_added', (snapshot) => {
+            // 3. مراقبة أي رسائل جديدة في الجذر الموحد
+            database.ref('lawyerMessages').on('child_added', (snapshot) => {
                 const key = snapshot.key;
                 const data = snapshot.val();
                 
@@ -3781,9 +5678,8 @@
                     lastReadUpdate: new Date().toISOString()
                 };
                 
-                // تحديث في Firebase
-                await database.ref(`chat/${currentLawyer.id}/readStatus/admin`).update(readStatusUpdate);
-                await database.ref(`chat/admin/readStatus/${currentLawyer.id}`).update(readStatusUpdate);
+                // تحديث في Firebase (المسار الموحد)
+                await database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).update(readStatusUpdate);
                 
                 // تحديث الرسائل المحلية
                 chatMessages.forEach(message => {
@@ -3845,8 +5741,8 @@
             
             console.log('👁️ إعداد مراقب حالة المشاهدة للمحامي');
             
-            // مراقبة تحديثات حالة القراءة من الإدارة
-            database.ref(`chat/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
+            // مراقبة تحديثات حالة القراءة من الإدارة (المسار الموحد)
+            database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const readStatus = snapshot.val();
                     if (readStatus.adminLastRead) {
@@ -3856,8 +5752,8 @@
                 }
             });
             
-            // مراقبة التحديثات في دليل الإدارة أيضاً
-            database.ref(`chat/admin/readStatus/${currentLawyer.id}`).on('value', (snapshot) => {
+            // مراقبة التحديثات في المسار الموحد أيضاً
+            database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const readStatus = snapshot.val();
                     if (readStatus.adminLastRead) {
@@ -3984,17 +5880,15 @@
                 الوقت: new Date().toLocaleTimeString('ar-EG')
             });
 
-            // Send to Firebase in admin directory
+            // Send to Firebase in lawyerMessages path only (موحد)
             if (database) {
-                database.ref('chat/admin/messages').push(messageData)
+                database.ref(`lawyerMessages/${currentLawyer.id}`).push(messageData)
                     .then(() => {
-                        console.log('✅ تم إرسال الرسالة إلى admin');
-                        
+                        console.log('✅ تم إرسال الرسالة إلى lawyerMessages/' + currentLawyer.id);
                         // تحديث حالة التسليم
                         messageData.delivered = true;
                         messageData.deliveryStatus = 'delivered';
                         messageData.deliveredAt = new Date().toISOString();
-                        
                         // تحديث الرسالة في القائمة المحلية
                         const localMessage = chatMessages.find(m => m.id === messageData.id);
                         if (localMessage) {
@@ -4004,37 +5898,21 @@
                                 deliveredAt: messageData.deliveredAt
                             });
                         }
-                        
                         renderChatMessages();
                         showNotification('تم الإرسال', 'تم إرسال الرسالة بنجاح', 'success');
-                        
-                        // تشغيل صوت الإشعار عند نجاح الإرسال
                         playNotificationSound();
-                        
-                        saveChatMessagesLocally(); // Save again after successful send
+                        saveChatMessagesLocally();
                     })
                     .catch((error) => {
                         console.error('❌ خطأ في إرسال الرسالة:', error);
-                        
-                        // تحديث حالة فشل التسليم
                         messageData.deliveryStatus = 'failed';
                         const localMessage = chatMessages.find(m => m.id === messageData.id);
                         if (localMessage) {
                             localMessage.deliveryStatus = 'failed';
                         }
-                        
                         renderChatMessages();
                         showNotification('خطأ', 'فشل في إرسال الرسالة', 'error');
                         saveChatMessagesLocally();
-                    });
-
-                // Also save in lawyer's own directory for backup
-                database.ref(`chat/${currentLawyer.id}/messages`).push(messageData)
-                    .then(() => {
-                        console.log('✅ تم حفظ نسخة احتياطية في دليل المحامي');
-                    })
-                    .catch((error) => {
-                        console.warn('⚠️ فشل في حفظ النسخة الاحتياطية:', error);
                     });
             }
 
@@ -4236,13 +6114,8 @@
             if (database && currentLawyer) {
                 const deletePromises = [];
                 
-                // حذف من دليل الإدارة
-                deletePromises.push(database.ref(`chat/admin/${messageId}`).remove());
-                deletePromises.push(database.ref(`chat/admin/messages/${messageId}`).remove());
-                
-                // حذف من دليل المحامي
-                deletePromises.push(database.ref(`chat/${currentLawyer.id}/${messageId}`).remove());
-                deletePromises.push(database.ref(`chat/${currentLawyer.id}/messages/${messageId}`).remove());
+                // حذف من المسار الموحد
+                deletePromises.push(database.ref(`lawyerMessages/${currentLawyer.id}/${messageId}`).remove());
                 
                 Promise.all(deletePromises)
                     .then(() => {
@@ -4341,15 +6214,16 @@
             loadChatMessages();
         }
 
-        // Auto-initialize chat when connected
+        // Auto-initialize chat when connected (only for non-admin users)
         database.ref('.info/connected').on('value', (snapshot) => {
             isConnected = snapshot.val() === true;
             updateConnectionStatus();
-            
-            if (isConnected && currentLawyer) {
+
+            // Only run lawyer-specific flows when a non-admin lawyer is signed in
+            if (isConnected && currentLawyer && !currentLawyer.isAdmin) {
                 loadLawyerCases();
                 initializeChat(); // Initialize chat when connected
-                
+
                 // إعداد مراقبة إضافية للرسائل الجديدة
                 setTimeout(() => {
                     console.log('🔄 إعداد مراقبة إضافية للرسائل...');
@@ -4360,9 +6234,10 @@
         });
 
         setInterval(() => {
-            if (currentLawyer && isConnected) {
+            // Only perform periodic lawyer tasks for signed-in non-admin lawyers
+            if (currentLawyer && !currentLawyer.isAdmin && isConnected) {
                 loadLawyerCases();
-                
+
                 // تحديث دوري للدردشة
                 if (!isChatOpen) {
                     console.log('🔄 تحديث دوري للدردشة في الخلفية');
@@ -4406,6 +6281,651 @@
                 alert(`ℹ️ ${title}: ${message}`);
             }
         }
+
+        // ========== PWA Installation Functions ==========
+        
+        function initializePWA() {
+            console.log('🚀 تهيئة ميزات PWA...');
+            
+            // Check if app is already running in standalone mode
+            checkStandaloneMode();
+            
+            // Register service worker
+            registerServiceWorker();
+            
+            // Setup install prompt listeners
+            setupInstallPrompt();
+            
+            // Check for updates
+            checkForUpdates();
+            
+            // Setup offline/online listeners
+            setupOnlineOfflineHandlers();
+            
+            // Check and show install banner if eligible
+            setTimeout(() => {
+                checkInstallEligibility();
+            }, 2000);
+        }
+        
+        function checkStandaloneMode() {
+            isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone || 
+                          document.referrer.includes('android-app://') ||
+                          window.matchMedia('(display-mode: minimal-ui)').matches;
+            
+            console.log('📱 وضع التطبيق المستقل:', isStandalone);
+            
+            if (isStandalone) {
+                // Hide install buttons if already installed
+                hideInstallButtons();
+                console.log('✅ التطبيق يعمل في الوضع المستقل');
+            } else {
+                console.log('🌐 التطبيق يعمل في المتصفح العادي');
+                // Show install options after a delay
+                setTimeout(() => {
+                    checkInstallEligibility();
+                }, 1000);
+            }
+        }
+        
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                console.log('🔧 تسجيل Service Worker...');
+                
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ تم تسجيل Service Worker بنجاح:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            console.log('🔄 تحديث جديد متاح للتطبيق');
+                            const newWorker = registration.installing;
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdateAvailableNotification();
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('❌ فشل في تسجيل Service Worker:', error);
+                    });
+                    
+                // Listen for messages from service worker
+                navigator.serviceWorker.addEventListener('message', event => {
+                    console.log('📨 رسالة من Service Worker:', event.data);
+                    
+                    if (event.data.type === 'UPDATE_AVAILABLE') {
+                        showUpdateAvailableNotification();
+                    }
+                });
+            } else {
+                console.warn('⚠️ Service Workers غير مدعوم في هذا المتصفح');
+            }
+        }
+        
+        function setupInstallPrompt() {
+            // Listen for beforeinstallprompt event
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('🎯 beforeinstallprompt event triggered');
+                e.preventDefault();
+                deferredPrompt = e;
+                isInstallable = true;
+                
+                // Show install buttons immediately
+                showInstallButtons();
+                
+                // Also show install banner after a delay
+                setTimeout(() => {
+                    if (!localStorage.getItem('installBannerDismissed')) {
+                        showInstallBanner();
+                    }
+                }, 2000);
+                
+                console.log('✅ التطبيق قابل للتثبيت');
+            });
+            
+            // Listen for app installed event
+            window.addEventListener('appinstalled', (e) => {
+                console.log('🎉 تم تثبيت التطبيق بنجاح!');
+                deferredPrompt = null;
+                isInstallable = false;
+                isStandalone = true;
+                
+                // Hide install UI
+                hideInstallButtons();
+                dismissInstallBanner();
+                
+                // Show success notification
+                const notification = {
+                    id: Date.now().toString(),
+                    title: 'تم التثبيت بنجاح! 🎉',
+                    description: 'يمكنك الآن الوصول للتطبيق من الشاشة الرئيسية',
+                    type: 'success',
+                    timestamp: Date.now(),
+                    read: false
+                };
+                if (typeof addNotification === 'function') {
+                    addNotification(notification);
+                }
+                
+                trackInstallation();
+            });
+            
+            // Additional check for browsers that don't support beforeinstallprompt
+            setTimeout(() => {
+                if (!deferredPrompt && !isStandalone && 'serviceWorker' in navigator) {
+                    console.log('📱 إظهار خيارات التثبيت اليدوي');
+                    showInstallButtons();
+                }
+            }, 5000);
+        }
+        
+        function checkInstallEligibility() {
+            console.log('🔍 فحص إمكانية التثبيت...');
+            
+            // If already in standalone mode, don't show install
+            if (isStandalone) {
+                console.log('🚫 التطبيق مثبت بالفعل');
+                return;
+            }
+            
+            // If we have a deferred prompt, show it
+            if (deferredPrompt) {
+                console.log('✅ يمكن تثبيت التطبيق');
+                showInstallButtons();
+                return;
+            }
+            
+            // Check if we're on a supported platform
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+            const isSupported = 'serviceWorker' in navigator && 'PushManager' in window;
+            
+            if (isMobile && isSupported) {
+                console.log('📱 منصة محمولة مدعومة - إظهار تعليمات التثبيت');
+                showInstallButtons();
+                
+                // Show banner if not dismissed
+                if (!localStorage.getItem('installBannerDismissed')) {
+                    setTimeout(() => {
+                        showInstallBanner();
+                    }, 3000);
+                }
+            } else {
+                console.log('🖥️ منصة غير مدعومة أو تم التثبيت بالفعل');
+            }
+        }
+        
+        function showInstallButtons() {
+            console.log('👆 إظهار أزرار التثبيت');
+            
+            const installBtn = document.getElementById('install-btn');
+            const installMenuBtn = document.getElementById('install-menu-btn');
+            
+            if (installBtn) {
+                installBtn.style.display = 'flex';
+                installBtn.title = 'تثبيت التطبيق على جهازك';
+                installBtn.classList.remove('hidden');
+            }
+            
+            if (installMenuBtn) {
+                installMenuBtn.style.display = 'flex';
+                installMenuBtn.classList.remove('hidden');
+            }
+            
+            // For browsers that don't support beforeinstallprompt (like iOS Safari)
+            const userAgent = navigator.userAgent.toLowerCase();
+            if ((userAgent.includes('safari') && (userAgent.includes('iphone') || userAgent.includes('ipad'))) ||
+                userAgent.includes('firefox') ||
+                !deferredPrompt) {
+                // Show banner immediately for these browsers
+                setTimeout(() => {
+                    if (!localStorage.getItem('installBannerDismissed')) {
+                        showInstallBanner();
+                    }
+                }, 1000);
+            }
+        }
+        
+        function hideInstallButtons() {
+            console.log('🙈 إخفاء أزرار التثبيت');
+            
+            const installBtn = document.getElementById('install-btn');
+            const installMenuBtn = document.getElementById('install-menu-btn');
+            
+            if (installBtn) {
+                installBtn.style.display = 'none';
+            }
+            
+            if (installMenuBtn) {
+                installMenuBtn.style.display = 'none';
+            }
+        }
+        
+        function showInstallPrompt() {
+            console.log('💬 إظهار نافذة التثبيت');
+            
+            if (!isInstallable && !deferredPrompt) {
+                showManualInstallInstructions();
+                return;
+            }
+            
+            document.getElementById('install-modal').classList.add('active');
+        }
+        
+        function showManualInstallInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '';
+            let deviceType = '';
+            
+            if (userAgent.includes('chrome') && userAgent.includes('android')) {
+                deviceType = 'Chrome على الأندرويد';
+                instructions = `📱 ${deviceType}:
+1. اضغط على القائمة (⋮) في أعلى اليمين
+2. اختر "إضافة إلى الشاشة الرئيسية"
+3. اضغط "إضافة" لتأكيد التثبيت
+4. سيظهر التطبيق على الشاشة الرئيسية`;
+            } else if (userAgent.includes('safari') && userAgent.includes('iphone')) {
+                deviceType = 'Safari على الآيفون';
+                instructions = `📱 ${deviceType}:
+1. اضغط على زر المشاركة 📤 في أسفل الشاشة
+2. مرر لأسفل واختر "إضافة إلى الشاشة الرئيسية"
+3. يمكنك تعديل الاسم إذا أردت
+4. اضغط "إضافة" في أعلى اليمين
+5. سيظهر التطبيق على الشاشة الرئيسية`;
+            } else if (userAgent.includes('safari') && userAgent.includes('ipad')) {
+                deviceType = 'Safari على الآيباد';
+                instructions = `📱 ${deviceType}:
+1. اضغط على زر المشاركة 📤 في شريط الأدوات
+2. اختر "إضافة إلى الشاشة الرئيسية"
+3. يمكنك تعديل الاسم إذا أردت
+4. اضغط "إضافة"
+5. سيظهر التطبيق على الشاشة الرئيسية`;
+            } else if (userAgent.includes('firefox')) {
+                deviceType = 'Firefox';
+                instructions = `🦊 ${deviceType}:
+1. اضغط على القائمة (⋮)
+2. ابحث عن خيار "تثبيت" أو "Install"
+3. اتبع التعليمات لإكمال التثبيت
+أو:
+1. ابحث عن أيقونة + في شريط العنوان
+2. اضغط عليها واتبع التعليمات`;
+            } else if (userAgent.includes('edge')) {
+                deviceType = 'Microsoft Edge';
+                instructions = `🔷 ${deviceType}:
+1. اضغط على القائمة (...) في أعلى اليمين
+2. اختر "تطبيقات" ← "تثبيت هذا الموقع كتطبيق"
+3. اتبع التعليمات لإكمال التثبيت
+أو:
+1. ابحث عن أيقونة + في شريط العنوان
+2. اضغط عليها واختر "تثبيت التطبيق"`;
+            } else if (userAgent.includes('samsung')) {
+                deviceType = 'Samsung Internet';
+                instructions = `📱 ${deviceType}:
+1. اضغط على القائمة في أسفل الشاشة
+2. اختر "إضافة إلى الشاشة الرئيسية"
+3. اضغط "إضافة" لتأكيد التثبيت`;
+            } else {
+                deviceType = 'متصفح عام';
+                instructions = `🌐 لتثبيت التطبيق:
+1. ابحث عن خيار "إضافة إلى الشاشة الرئيسية" في قائمة المتصفح
+2. أو ابحث عن أيقونة التثبيت (+) في شريط العنوان
+3. أو ابحث عن "تثبيت التطبيق" في خيارات المتصفح
+4. اتبع التعليمات لإكمال التثبيت
+
+💡 إذا لم تجد هذه الخيارات، فقد لا يدعم متصفحك تثبيت التطبيقات.`;
+            }
+            
+            // عرض الرسالة بتنسيق أفضل
+            alert(`🔧 كيفية تثبيت التطبيق\n\n${instructions}\n\n💡 نصيحة: بعد التثبيت، ستحصل على:\n✅ وصول سريع من الشاشة الرئيسية\n✅ تجربة تطبيق أصلي\n✅ عمل بدون إنترنت (محدود)\n✅ إشعارات محسنة`);
+            
+            document.getElementById('install-instructions-text').textContent = instructions;
+            document.getElementById('install-instructions').style.display = 'block';
+            document.getElementById('install-confirm-btn').style.display = 'none';
+            
+            document.getElementById('install-modal').classList.add('active');
+        }
+        
+        async function confirmInstallation() {
+            console.log('⚡ محاولة تثبيت التطبيق...');
+            
+            if (!deferredPrompt) {
+                console.log('❌ لا يوجد prompt للتثبيت - إظهار تعليمات يدوية');
+                showManualInstallInstructions();
+                return;
+            }
+            
+            try {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user's response
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                console.log('👤 استجابة المستخدم:', outcome);
+                
+                if (outcome === 'accepted') {
+                    console.log('✅ وافق المستخدم على التثبيت');
+                    
+                    // Hide install modal
+                    closeModal('install-modal');
+                    
+                    // Show success message
+                    setTimeout(() => {
+                        alert('🎉 تم بدء التثبيت! سيظهر التطبيق على الشاشة الرئيسية قريباً.');
+                    }, 500);
+                } else {
+                    console.log('❌ رفض المستخدم التثبيت');
+                    alert('تم إلغاء التثبيت. يمكنك تثبيت التطبيق لاحقاً من خيارات المتصفح.');
+                }
+                
+                // Clear the prompt
+                deferredPrompt = null;
+                isInstallable = false;
+                
+            } catch (error) {
+                console.error('❌ خطأ في التثبيت:', error);
+                alert('حدث خطأ أثناء التثبيت. يرجى المحاولة مرة أخرى أو استخدام خيارات المتصفح.');
+                
+                // Fallback to manual instructions
+                showManualInstallInstructions();
+            }
+        }
+        
+        function showInstallBanner() {
+            if (localStorage.getItem('installBannerDismissed') === 'true') {
+                return;
+            }
+            
+            const banner = document.createElement('div');
+            banner.id = 'install-banner';
+            banner.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                color: white;
+                padding: 1rem;
+                border-radius: 1rem;
+                box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                animation: slideUp 0.5s ease-out;
+            `;
+            
+            banner.innerHTML = `
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; margin-bottom: 0.3rem;">📱 تثبيت التطبيق</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">احصل على تجربة أفضل مع التطبيق المثبت</div>
+                </div>
+                <button onclick="showInstallPrompt(); dismissInstallBanner();" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
+                    تثبيت
+                </button>
+                <button onclick="dismissInstallBanner();" style="background: none; border: none; color: white; padding: 0.5rem; cursor: pointer; opacity: 0.7;">
+                    ✕
+                </button>
+            `;
+            
+            document.body.appendChild(banner);
+            
+            // Auto-dismiss after 10 seconds
+            setTimeout(() => {
+                dismissInstallBanner();
+            }, 10000);
+        }
+        
+        function dismissInstallBanner() {
+            const banner = document.getElementById('install-banner');
+            if (banner) {
+                banner.style.animation = 'slideDown 0.3s ease-out forwards';
+                setTimeout(() => {
+                    banner.remove();
+                }, 300);
+            }
+            
+            localStorage.setItem('installBannerDismissed', 'true');
+        }
+        
+        function checkForUpdates() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                console.log('🔄 فحص التحديثات...');
+                
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'CHECK_FOR_UPDATES'
+                });
+            }
+        }
+        
+        function showUpdateAvailableNotification() {
+            const notification = {
+                id: 'app_update_' + Date.now(),
+                type: 'app-update',
+                title: '🔄 تحديث التطبيق',
+                description: 'يتوفر تحديث جديد للتطبيق. انقر لإعادة التحميل وتطبيق التحديث.',
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+            
+            addNotification(notification);
+            
+            // Show browser notification if permission granted
+            if (Notification.permission === 'granted') {
+                const browserNotification = new Notification('تحديث التطبيق متاح', {
+                    body: 'انقر لتطبيق التحديث الجديد',
+                    icon: './icons/icon-192x192.png',
+                    badge: './icons/icon-72x72.png',
+                    tag: 'app-update'
+                });
+                
+                browserNotification.onclick = () => {
+                    reloadForUpdate();
+                    browserNotification.close();
+                };
+            }
+        }
+        
+        function reloadForUpdate() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.controller?.postMessage({
+                    type: 'SKIP_WAITING'
+                });
+                
+                window.location.reload();
+            }
+        }
+        
+        function setupOnlineOfflineHandlers() {
+            window.addEventListener('online', () => {
+                console.log('🌐 الاتصال متاح مرة أخرى');
+                updateConnectionStatus();
+                
+                // Retry loading data when back online
+                if (currentLawyer) {
+                    setTimeout(() => {
+                        loadLawyerCases();
+                        loadChatMessages();
+                    }, 1000);
+                }
+                
+                showNotification('متصل', 'تم استعادة الاتصال بالإنترنت', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                console.log('📴 انقطع الاتصال بالإنترنت');
+                updateConnectionStatus();
+                showNotification('غير متصل', 'انقطع الاتصال بالإنترنت. سيعمل التطبيق في الوضع المحفوظ.', 'info');
+            });
+        }
+        
+        function trackInstallation() {
+            // Track installation for analytics (optional)
+            const installData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language
+            };
+            
+            localStorage.setItem('appInstallData', JSON.stringify(installData));
+            console.log('📊 تم تسجيل بيانات التثبيت:', installData);
+        }
+        
+        // Add some CSS animations for install banner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideDown {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // عرض بانر التثبيت بعد تحميل الصفحة
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                // التحقق من إمكانية التثبيت
+                if (!isStandalone && 'serviceWorker' in navigator) {
+                    console.log('🔍 فحص إمكانية التثبيت بعد تحميل الصفحة');
+                    
+                    // إظهار زر التثبيت في الهيدر
+                    const installBtn = document.getElementById('install-btn');
+                    if (installBtn) {
+                        installBtn.style.display = 'flex';
+                        installBtn.classList.remove('hidden');
+                    }
+                    
+                    // إظهار زر التثبيت في القائمة الجانبية
+                    const installMenuBtn = document.getElementById('install-menu-btn');
+                    if (installMenuBtn) {
+                        installMenuBtn.style.display = 'flex';
+                        installMenuBtn.classList.remove('hidden');
+                    }
+                    
+                    // إظهار بانر التثبيت إذا لم يتم رفضه
+                    if (!localStorage.getItem('installBannerDismissed')) {
+                        setTimeout(() => {
+                            if (typeof showInstallBanner === 'function') {
+                                showInstallBanner();
+                            }
+                        }, 8000); // عرض البانر بعد 8 ثوان
+                    }
+                }
+            }, 2000);
+        });
+
+        // تحسين تشخيص التثبيت
+        function debugPWAInstallation() {
+            console.log('🔧 تشخيص PWA:');
+            console.log('- isStandalone:', isStandalone);
+            console.log('- isInstallable:', isInstallable);
+            console.log('- deferredPrompt:', !!deferredPrompt);
+            console.log('- Service Worker:', 'serviceWorker' in navigator);
+            console.log('- User Agent:', navigator.userAgent);
+            console.log('- Display Mode:', window.matchMedia('(display-mode: standalone)').matches);
+            console.log('- Navigator Standalone:', window.navigator.standalone);
+            console.log('- Online:', navigator.onLine);
+            
+            // فحص manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                console.log('- Manifest: ✅ موجود -', manifestLink.href);
+                
+                // اختبار تحميل manifest
+                fetch(manifestLink.href)
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('- Manifest Load: ✅ نجح');
+                            return response.json();
+                        } else {
+                            console.log('- Manifest Load: ❌ فشل -', response.status);
+                        }
+                    })
+                    .then(manifest => {
+                        if (manifest) {
+                            console.log('- Manifest Content: ✅ صحيح');
+                            console.log('  - Name:', manifest.name);
+                            console.log('  - Start URL:', manifest.start_url);
+                            console.log('  - Display:', manifest.display);
+                            console.log('  - Icons:', manifest.icons?.length || 0);
+                        }
+                    })
+                    .catch(error => {
+                        console.log('- Manifest Error: ❌', error);
+                    });
+            } else {
+                console.log('- Manifest: ❌ غير موجود');
+            }
+            
+            // فحص Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    console.log('- SW Registrations:', registrations.length);
+                    registrations.forEach((reg, index) => {
+                        console.log(`  - SW ${index + 1}:`, reg.scope);
+                    });
+                });
+            }
+            
+            // فحص الأيقونات
+            const icons = document.querySelectorAll('link[rel*="icon"]');
+            console.log('- Icons:', icons.length, 'أيقونة موجودة');
+            
+            // فحص متطلبات PWA
+            const requirements = {
+                'HTTPS أو localhost': location.protocol === 'https:' || location.hostname === 'localhost',
+                'Service Worker': 'serviceWorker' in navigator,
+                'Manifest': !!document.querySelector('link[rel="manifest"]'),
+                'Icons': icons.length > 0,
+                'Start URL': true // نفترض أنه موجود
+            };
+            
+            console.log('- متطلبات PWA:');
+            Object.entries(requirements).forEach(([key, value]) => {
+                console.log(`  - ${key}: ${value ? '✅' : '❌'}`);
+            });
+            
+            // نصائح للمطورين
+            if (!requirements['HTTPS أو localhost']) {
+                console.warn('⚠️ PWA يتطلب HTTPS للعمل في الإنتاج');
+            }
+            
+            if (!isInstallable && !isStandalone) {
+                console.log('💡 نصائح لتمكين التثبيت:');
+                console.log('  1. تأكد من وجود manifest.json صحيح');
+                console.log('  2. تأكد من تسجيل Service Worker');
+                console.log('  3. تأكد من وجود أيقونات بأحجام مختلفة');
+                console.log('  4. تأكد من استخدام HTTPS');
+                console.log('  5. تفاعل المستخدم مطلوب قبل عرض prompt التثبيت');
+            }
+        }
+
+        // تشغيل التشخيص عند الحاجة
+        setTimeout(() => {
+            debugPWAInstallation();
+        }, 3000);
     </script>
 </body>
 </html>
