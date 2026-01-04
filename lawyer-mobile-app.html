@@ -4754,19 +4754,36 @@
         }
 
         function searchCases() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) {
+                console.error('❌ لم يتم العثور على حقل البحث');
+                return;
+            }
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            console.log('🔍 البحث عن:', searchTerm);
             
             if (!searchTerm) {
                 filteredCases = [...allCases];
             } else {
-                filteredCases = allCases.filter(caseItem => 
-                    caseItem.caseNumber.toLowerCase().includes(searchTerm) ||
-                    caseItem.subject.toLowerCase().includes(searchTerm) ||
-                    caseItem.plaintiffName.toLowerCase().includes(searchTerm) ||
-                    caseItem.defendantName.toLowerCase().includes(searchTerm)
-                );
+                filteredCases = allCases.filter(caseItem => {
+                    const caseNumber = (caseItem.caseNumber || '').toLowerCase();
+                    const subject = (caseItem.subject || '').toLowerCase();
+                    const plaintiffName = (caseItem.plaintiffName || '').toLowerCase();
+                    const defendantName = (caseItem.defendantName || '').toLowerCase();
+                    const status = (caseItem.status || '').toLowerCase();
+                    const court = (caseItem.court || '').toLowerCase();
+                    
+                    return caseNumber.includes(searchTerm) ||
+                           subject.includes(searchTerm) ||
+                           plaintiffName.includes(searchTerm) ||
+                           defendantName.includes(searchTerm) ||
+                           status.includes(searchTerm) ||
+                           court.includes(searchTerm);
+                });
             }
             
+            console.log('✅ النتائج:', filteredCases.length, 'من', allCases.length);
             renderCases();
         }
 
@@ -5410,8 +5427,8 @@
 
             // إعداد مستمعين شاملين للرسائل من جميع المصادر الممكنة
             
-            // 1. مراقبة الرسائل في دليل المحامي
-            database.ref(`chat/${currentLawyer.id}`).on('value', (snapshot) => {
+            // 1. مراقبة الرسائل في مسار موحد
+            database.ref(`lawyerMessages/${currentLawyer.id}`).on('value', (snapshot) => {
                 console.log('🔍 فحص دليل المحامي:', currentLawyer.id);
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -5445,8 +5462,8 @@
                 }
             });
 
-            // 2. مراقبة الرسائل في دليل الإدارة
-            database.ref('chat/admin').on('value', (snapshot) => {
+            // 2. مراقبة الرسائل في مسار موحد (الإدارة)
+            database.ref(`lawyerMessages/${currentLawyer.id}`).on('value', (snapshot) => {
                 console.log('🔍 فحص دليل الإدارة');
                 if (snapshot.exists()) {
                     const adminData = snapshot.val();
@@ -5502,8 +5519,8 @@
                 }
             });
 
-            // 3. مراقبة أي رسائل جديدة في الجذر
-            database.ref('chat').on('child_added', (snapshot) => {
+            // 3. مراقبة أي رسائل جديدة في الجذر الموحد
+            database.ref('lawyerMessages').on('child_added', (snapshot) => {
                 const key = snapshot.key;
                 const data = snapshot.val();
                 
@@ -5661,9 +5678,8 @@
                     lastReadUpdate: new Date().toISOString()
                 };
                 
-                // تحديث في Firebase
-                await database.ref(`chat/${currentLawyer.id}/readStatus/admin`).update(readStatusUpdate);
-                await database.ref(`chat/admin/readStatus/${currentLawyer.id}`).update(readStatusUpdate);
+                // تحديث في Firebase (المسار الموحد)
+                await database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).update(readStatusUpdate);
                 
                 // تحديث الرسائل المحلية
                 chatMessages.forEach(message => {
@@ -5725,8 +5741,8 @@
             
             console.log('👁️ إعداد مراقب حالة المشاهدة للمحامي');
             
-            // مراقبة تحديثات حالة القراءة من الإدارة
-            database.ref(`chat/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
+            // مراقبة تحديثات حالة القراءة من الإدارة (المسار الموحد)
+            database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const readStatus = snapshot.val();
                     if (readStatus.adminLastRead) {
@@ -5736,8 +5752,8 @@
                 }
             });
             
-            // مراقبة التحديثات في دليل الإدارة أيضاً
-            database.ref(`chat/admin/readStatus/${currentLawyer.id}`).on('value', (snapshot) => {
+            // مراقبة التحديثات في المسار الموحد أيضاً
+            database.ref(`lawyerMessages/${currentLawyer.id}/readStatus/admin`).on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const readStatus = snapshot.val();
                     if (readStatus.adminLastRead) {
@@ -5864,11 +5880,11 @@
                 الوقت: new Date().toLocaleTimeString('ar-EG')
             });
 
-            // Send to Firebase in lawyer's chat directory only (موحد)
+            // Send to Firebase in lawyerMessages path only (موحد)
             if (database) {
-                database.ref(`chat/${currentLawyer.id}/messages`).push(messageData)
+                database.ref(`lawyerMessages/${currentLawyer.id}`).push(messageData)
                     .then(() => {
-                        console.log('✅ تم إرسال الرسالة إلى chat/' + currentLawyer.id + '/messages');
+                        console.log('✅ تم إرسال الرسالة إلى lawyerMessages/' + currentLawyer.id);
                         // تحديث حالة التسليم
                         messageData.delivered = true;
                         messageData.deliveryStatus = 'delivered';
@@ -6098,13 +6114,8 @@
             if (database && currentLawyer) {
                 const deletePromises = [];
                 
-                // حذف من دليل الإدارة
-                deletePromises.push(database.ref(`chat/admin/${messageId}`).remove());
-                deletePromises.push(database.ref(`chat/admin/messages/${messageId}`).remove());
-                
-                // حذف من دليل المحامي
-                deletePromises.push(database.ref(`chat/${currentLawyer.id}/${messageId}`).remove());
-                deletePromises.push(database.ref(`chat/${currentLawyer.id}/messages/${messageId}`).remove());
+                // حذف من المسار الموحد
+                deletePromises.push(database.ref(`lawyerMessages/${currentLawyer.id}/${messageId}`).remove());
                 
                 Promise.all(deletePromises)
                     .then(() => {

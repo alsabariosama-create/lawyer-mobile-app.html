@@ -65,6 +65,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip unsupported schemes (chrome-extension, etc.)
+  if (url.protocol === 'chrome-extension:') {
+    return;
+  }
+
   // Handle Firebase requests - always try network first
   if (url.hostname.includes('firebase') || url.hostname.includes('firebaseio')) {
     event.respondWith(
@@ -86,10 +91,13 @@ self.addEventListener('fetch', (event) => {
         // Return cached version and update cache in background
         fetch(request).then((response) => {
           if (response && response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
+            // Skip caching unsupported schemes
+            if (!request.url.startsWith('chrome-extension://')) {
+              const responseClone = response.clone();
+              caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+                cache.put(request, responseClone);
+              });
+            }
           }
         }).catch(() => {
           // Network failed, but we have cache
@@ -103,11 +111,13 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
 
-        // Cache successful responses
-        const responseClone = response.clone();
-        caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-          cache.put(request, responseClone);
-        });
+        // Cache successful responses, skip unsupported schemes
+        if (!request.url.startsWith('chrome-extension://')) {
+          const responseClone = response.clone();
+          caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+            cache.put(request, responseClone);
+          });
+        }
 
         return response;
       }).catch(() => {
